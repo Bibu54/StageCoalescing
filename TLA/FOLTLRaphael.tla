@@ -1,4 +1,4 @@
-------------------------------- MODULE FOLTL --------------------------------
+------------------------------- MODULE FOLTLRaphael --------------------------------
 (***************************************************************************)
 (* Experiments with proofs about first-order temporal logic.               *)
 (***************************************************************************)
@@ -193,6 +193,47 @@ THEOREM TypeCorrect == Spec => []Init
 
 LEMMA Enable == (ENABLED << Dec >>_cnt) <=> cnt > 0
 
+
+(*
+THEOREM LATTICE ==
+  ASSUME NEW R, NEW S, IsWellFoundedOn(R,S), TEMPORAL F(_), TEMPORAL G
+  PROVE  (\A x \in S : F(x) ~> (G \/ \E y \in SetLessThan(x,R,S) : F(y)))
+         => \A x \in S : F(x) ~> G
+
+    S == Nat
+    R == OpToRel(<,Nat)
+    NatLessThanWellFounded
+    F(x) == cnt = x /\ cnt > 0
+    G == cnt = 0
+*)
+
 THEOREM Termination == Spec => <>(cnt = 0)
+<1>. PICK S : S = Nat
+    BY DEF Nat
+<1>. PICK R : R = OpToRel(<,Nat)
+    BY DEF OpToRel, Nat
+<1>. DEFINE F(x) == cnt = x /\ cnt > 0
+<1>. PICK G : G <=> cnt = 0
+    OBVIOUS
+<1>. HIDE DEF F
+<1>3. IsWellFoundedOn(R,S)
+    BY NatLessThanWellFounded
+<1>2. ((\A x \in S : F(x) ~> (G \/ \E y \in SetLessThan(x,R,S) : F(y))))
+      => (\A x \in S : F(x) ~> G)
+    BY LATTICE, <1>3
+<1>. QED
+(*
+THEOREM Termination == Spec => <>(cnt = 0)
+<1>. DEFINE S == Nat
+<1>. DEFINE R == OpToRel(<,Nat)
+<1>. DEFINE F(x) == cnt = x /\ cnt > 0
+<1>. DEFINE G == cnt = 0
+<1>. HIDE DEF S, R, F, G
+<1>3. IsWellFoundedOn(R,S)
+<1>2. ((\A x \in S : F(x) ~> (G \/ \E y \in SetLessThan(x,R,S) : F(y))))
+      => (\A x \in S : F(x) ~> G)
+    BY LATTICE, <1>3 DEF NatLessThanWellFounded
+<1>. QED
+*)
 
 =============================================================================
