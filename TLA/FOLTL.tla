@@ -32,7 +32,10 @@ THEOREM ASSUME NEW n \in Nat, STATE x
 OBVIOUS
 
 \* Exercise: try to prove the above using theorem ForallBoxTemporal
-
+THEOREM ASSUME NEW n \in Nat, STATE x
+        PROVE  (\A i \in 1..n : []<>(x=i)) <=> [](\A i \in 1..n : <>(x=i))
+    BY ForallBoxTemporal
+    
 (***************************************************************************)
 (* Attempting to prove the analogue of ForallBoxTemporal for a set S that  *)
 (* is not constant fails, as it should (use C-G C-P).                      *)
@@ -48,7 +51,7 @@ OBVIOUS
 
 (***************************************************************************)
 (* The following theorem asserts that quantification over a finite         *)
-(* constant sets commutes with <>[]. (The axiom STL6 from the TLA paper    *)
+(* constants set commutes with <>[]. (The axiom STL6 from the TLA paper    *)
 (* asserts this for a conjunction of two formulas, hence the name of the   *)
 (* theorem.) Note that finiteness is essential here.                       *)
 (***************************************************************************)
@@ -82,9 +85,34 @@ THEOREM STL6_gen ==
     BY <1>1, <1>2, IsFiniteSet(T), FS_Induction, IsaM("blast")
   <2>2.G(S) BY <2>1  \* why does the proof fail without this step?
   <2>. QED  BY <2>2 DEF G
+  
 
 -----------------------------------------------------------------------------
 
+(*
+(* Inutile en fait.. *)
+LEMMA BUVEUR ==
+    ASSUME TEMPORAL P(_), TEMPORAL Q
+    PROVE (((\E y : P(y)) => Q) => \E y : P(y) => Q)
+    <1> DEFINE R == \E y : P(y)
+    <1>1. ASSUME ((\E y : P(y)) => Q)
+          PROVE \E y : P(y) => Q
+          <2>1 R \/ \neg R
+               <3> QED OBVIOUS
+          <2>2. ASSUME R
+                PROVE \E y : P(y) => Q
+               <3>. QED  BY <2>2, <1>1
+          <2>3. ASSUME \neg R
+                PROVE \E y : P(y) => Q
+               <3>1. ASSUME NEW y, P(y)
+                     PROVE Q
+                     <4> QED  BY <3>1, <2>3 DEF R
+               <3>2. QED  BY <3>1
+          <2> QED  BY <2>1, <2>2, <2>3
+    <1> QED BY <1>1
+*)
+
+    
 (***************************************************************************)
 (* Exercise: complete the proof of the following theorem.                  *)
 (* The LATTICE rule from the TLA paper underlies liveness proofs based     *)
@@ -99,6 +127,35 @@ THEOREM LATTICE ==
 <1>1. ASSUME NEW z \in S
       PROVE  (\A x \in S : LT(x))
              => ((\A y \in SetLessThan(z,R,S) : H(y)) => H(z))
+  <2> DEFINE K(x) == F(x) ~> \E y \in SetLessThan(x,R,S) : F(y)
+  <2>1. ASSUME (\A x \in S : LT(x)), 
+               (\A y \in SetLessThan(z,R,S) : H(y))
+        PROVE H(z)
+    <3>. HIDE DEF LT
+    <3>1. LT(z)
+          BY <2>1, <1>1
+    <3>2. \/ F(z) ~> G
+          \/ F(z) ~> (\E y \in SetLessThan(z,R,S) : F(y))
+          BY PTL, <2>1, <3>1 DEF LT
+    <3>3. (\E y \in SetLessThan(z,R,S) : F(y)) ~> G
+      <4> DEFINE T == SetLessThan(z,R,S)
+      <4>1. \A y \in T : [](F(y) => <>G)
+        BY <2>1, PTL DEF H
+      <4>2. [](\A y \in T : F(y) => <>G)
+        BY <4>1 \* coalescing ! :)
+      <4>3. (\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G)
+        OBVIOUS
+      <4>4. []((\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G))
+        \* BY <4>3, PTL
+(*        \* comment montrer que pour P valide, []P est valide ?
+        <5> DEFINE REC == ((\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G))
+        <5> QED
+*)
+      <4>5. []((\E y \in T : F(y)) => <>G)
+        BY PTL, <4>2, <4>4
+      <4> QED  BY <4>5, PTL
+    <3> QED  BY <3>2, <3>3, PTL
+  <2> QED BY <2>1 DEF K
 <1>2. QED
   <2>. HIDE DEF H
   <2>. (\A x \in S : LT(x)) => \A x \in S: H(x)
@@ -123,6 +180,18 @@ Spec == Init /\ [][Dec]_cnt /\ WF_cnt(Dec)
 (***************************************************************************)
 
 THEOREM TypeCorrect == Spec => []Init
+      <1> DEFINE Inv == Init
+      <1>0. Init => Inv
+          OBVIOUS
+      <1>1. (Inv /\ Dec) => Inv'
+          BY DEF Init, Dec, Nat, Inv
+      <1>2. (Inv /\ UNCHANGED cnt) => Inv'
+          BY DEF Inv, Init
+      <1>3. (Init /\ [][Dec]_cnt) => []Inv
+          BY PTL, <1>1, <1>2
+      <1> QED  BY <1>3 DEF Spec
+
+LEMMA Enable == (ENABLED << Dec >>_cnt) <=> cnt > 0
 
 THEOREM Termination == Spec => <>(cnt = 0)
 
