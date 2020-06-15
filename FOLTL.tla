@@ -146,10 +146,13 @@ THEOREM LATTICE ==
       <4>3. (\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G)
         OBVIOUS
       <4>4. []((\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G))
-        BY <4>3, PTL
-(*        \* comment montrer que pour P valide, []P est valide ?
+        \* comment montrer que pour P valide, []P est valide ?
+        \* les hypotheses temporelles introduites en <2>1 ne sont pas reconnues
+        \* commes des formules "[]"
+        \* DONC : reecrire "A ~> B" en "[](A => <>B)" 
+        \*        et "\A x : A(x) ~> B(x)" en [](\A x : A(x) => <>B(x)) 
         <5> DEFINE REC == ((\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G))
-        <5> QED *)
+        <5> QED
       <4>5. []((\E y \in T : F(y)) => <>G)
         BY PTL, <4>2, <4>4
       <4> QED  BY <4>5, PTL
@@ -193,5 +196,15 @@ THEOREM TypeCorrect == Spec => []Init
 LEMMA Enable == (ENABLED << Dec >>_cnt) <=> cnt > 0
 
 THEOREM Termination == Spec => <>(cnt = 0)
+<1>1. []Init /\ [][Dec]_cnt => [](Init => <>(cnt = 0))
+  <2>1. Init => \E x \in Nat : cnt = x
+    BY DEF Init
+  <2>. DEFINE F(x) == cnt = x
+              G == cnt = 0
+              R == OpToRel(<,Nat)
+  <2>2. \A x \in Nat : F(x) ~> (G \/ \E y \in SetLessThan(x, R, Nat) : F(y))
+  <2>. QED
+
+<1>. QED  BY <1>1, TypeCorrect, PTL DEF Spec
 
 =============================================================================
