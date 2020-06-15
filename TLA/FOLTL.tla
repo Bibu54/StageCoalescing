@@ -89,7 +89,7 @@ THEOREM STL6_gen ==
 
 -----------------------------------------------------------------------------
 
-
+(*
 (* Inutile en fait.. *)
 LEMMA BUVEUR ==
     ASSUME TEMPORAL P(_), TEMPORAL Q
@@ -110,7 +110,7 @@ LEMMA BUVEUR ==
                <3>2. QED  BY <3>1
           <2> QED  BY <2>1, <2>2, <2>3
     <1> QED BY <1>1
-
+*)
 
     
 (***************************************************************************)
@@ -146,13 +146,16 @@ THEOREM LATTICE ==
       <4>3. (\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G)
         OBVIOUS
       <4>4. []((\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G))
+        \* BY <4>3, PTL
         \* comment montrer que pour P valide, []P est valide ?
         \* les hypotheses temporelles introduites en <2>1 ne sont pas reconnues
         \* commes des formules "[]"
         \* DONC : reecrire "A ~> B" en "[](A => <>B)" 
         \*        et "\A x : A(x) ~> B(x)" en [](\A x : A(x) => <>B(x)) 
+(*        \* comment montrer que pour P valide, []P est valide ?
         <5> DEFINE REC == ((\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G))
         <5> QED
+*)
       <4>5. []((\E y \in T : F(y)) => <>G)
         BY PTL, <4>2, <4>4
       <4> QED  BY <4>5, PTL
@@ -192,7 +195,7 @@ THEOREM TypeCorrect == Spec => []Init
       <1>3. (Init /\ [][Dec]_cnt) => []Inv
           BY PTL, <1>1, <1>2
       <1> QED  BY <1>3 DEF Spec
-    
+
 LEMMA Enable == (ENABLED << Dec >>_cnt) <=> cnt > 0
 
 THEOREM Termination == Spec => <>(cnt = 0)
