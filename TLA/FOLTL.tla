@@ -1,4 +1,4 @@
-------------------------------- MODULE FOLTLRaphael --------------------------------
+------------------------------- MODULE FOLTL --------------------------------
 (***************************************************************************)
 (* Experiments with proofs about first-order temporal logic.               *)
 (***************************************************************************)
@@ -147,10 +147,11 @@ THEOREM LATTICE ==
         OBVIOUS
       <4>4. []((\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G))
         \* BY <4>3, PTL
-(*        \* comment montrer que pour P valide, []P est valide ?
-        <5> DEFINE REC == ((\A y \in T : F(y) => <>G) => ((\E y \in T : F(y)) => <>G))
-        <5> QED
-*)
+        \* comment montrer que pour P valide, []P est valide ?
+        \* les hypotheses temporelles introduites en <2>1 ne sont pas reconnues
+        \* commes des formules "[]"
+        \* DONC : reecrire "A ~> B" en "[](A => <>B)" 
+        \*        et "\A x : A(x) ~> B(x)" en [](\A x : A(x) => <>B(x)) 
       <4>5. []((\E y \in T : F(y)) => <>G)
         BY PTL, <4>2, <4>4
       <4> QED  BY <4>5, PTL
@@ -194,46 +195,65 @@ THEOREM TypeCorrect == Spec => []Init
 LEMMA Enable == (ENABLED << Dec >>_cnt) <=> cnt > 0
 
 
-(*
-THEOREM LATTICE ==
-  ASSUME NEW R, NEW S, IsWellFoundedOn(R,S), TEMPORAL F(_), TEMPORAL G
-  PROVE  (\A x \in S : F(x) ~> (G \/ \E y \in SetLessThan(x,R,S) : F(y)))
-         => \A x \in S : F(x) ~> G
-
-    S == Nat
-    R == OpToRel(<,Nat)
-    NatLessThanWellFounded
-    F(x) == cnt = x /\ cnt > 0
-    G == cnt = 0
-*)
 
 THEOREM Termination == Spec => <>(cnt = 0)
-<1>. PICK S : S = Nat
-    BY DEF Nat
-<1>. PICK R : R = OpToRel(<,Nat)
-    BY DEF OpToRel, Nat
-<1>. DEFINE F(x) == cnt = x /\ cnt > 0
-<1>. PICK G : G <=> cnt = 0
+<1>1. []Init /\ [][Dec]_cnt /\ WF_cnt(Dec) => [](Init => <>(cnt = 0))
+  <2>h. SUFFICES ASSUME WF_cnt(Dec)
+                PROVE []Init /\ [][Dec]_cnt => [](Init => <>(cnt = 0))
     OBVIOUS
-<1>. HIDE DEF F
-<1>3. IsWellFoundedOn(R,S)
-    BY NatLessThanWellFounded
-<1>2. ((\A x \in S : F(x) ~> (G \/ \E y \in SetLessThan(x,R,S) : F(y))))
-      => (\A x \in S : F(x) ~> G)
-    BY LATTICE, <1>3
-<1>. QED
-(*
-THEOREM Termination == Spec => <>(cnt = 0)
-<1>. DEFINE S == Nat
-<1>. DEFINE R == OpToRel(<,Nat)
-<1>. DEFINE F(x) == cnt = x /\ cnt > 0
-<1>. DEFINE G == cnt = 0
-<1>. HIDE DEF S, R, F, G
-<1>3. IsWellFoundedOn(R,S)
-<1>2. ((\A x \in S : F(x) ~> (G \/ \E y \in SetLessThan(x,R,S) : F(y))))
-      => (\A x \in S : F(x) ~> G)
-    BY LATTICE, <1>3 DEF NatLessThanWellFounded
-<1>. QED
-*)
+  <2>1. Init => \E x \in Nat : cnt = x
+    BY DEF Init
+  <2>. DEFINE F(x) == cnt = x
+              G == cnt = 0
+              R == OpToRel(<,Nat)
+\*  <2>. HIDE DEF F, G, R
+  <2>2. \A x \in Nat : F(x) ~> (G \/ \E y \in SetLessThan(x, R, Nat) : F(y))
+    <3>. SUFFICES ASSUME NEW x \in Nat
+                  PROVE F(x) ~> (G \/ \E y \in SetLessThan(x, R, Nat) : F(y))
+            OBVIOUS
+    <3>. SUFFICES [](F(x) => <>(G \/ \E y \in SetLessThan(x, R, Nat) : F(y)))
+            BY PTL
+    <3>a. x = 0 \/ x > 0
+            BY DEF Nat
+    <3>b. CASE x = 0
+        <4>. SUFFICES [](F(x) => G)
+            BY PTL
+        <4>. [](x = 0)
+            BY PTL, <3>b
+        <4>. SUFFICES []((cnt = x /\ x = 0) => cnt = 0)
+            BY PTL
+        <4>. SUFFICES (cnt = x /\ x = 0) => cnt = 0
+            BY PTL \* Il a (enfin) reconnu que la position de x est Leibniz ! :)
+        <4>. QED
+            OBVIOUS
+    <3>c. CASE x > 0
+        <4>. SUFFICES [](F(x) => <>(\E y \in SetLessThan(x, R, Nat) : F(y)))
+            BY PTL
+        <4>. SUFFICES (F(x) => <>(\E y \in SetLessThan(x, R, Nat) : F(y)))
+            BY PTL \* WTF ?
+        <4>. SUFFICES ASSUME F(x)
+                      PROVE <>(\E y \in SetLessThan(x, R, Nat) : F(y))
+            OBVIOUS 
+        <4>. SUFFICES \E y : y \in SetLessThan(x, R, Nat) /\ <>F(y)
+            OBVIOUS
+        <4> SUFFICES (x-1) \in SetLessThan(x, R, Nat) /\ <>F(x-1)
+            \* Il faut arriver à appliquer le principe de Leibniz dans <>F(x-1)
+            <5> SUFFICES <>(x-1 \in SetLessThan(x,R,Nat) /\ F(x-1))
+                BY PTL
+            <5> QED
+        <4> SUFFICES <>F(x-1)
+            BY <3>c DEF SetLessThan, OpToRel
+        <4> cnt > 0
+            BY <3>c
+        <4> ENABLED <<Dec>>_cnt
+            BY Enable
+        <4> SUFFICES WF_cnt(Dec)
+            \* Je n'ai pas réussi à m'en sortir avec Dec
+        <4>. QED BY <2>h 
+    <3>. QED
+        BY <3>a, <3>b, <3>c
+  <2>. QED
+
+<1>. QED  BY <1>1, TypeCorrect, PTL DEF Spec
 
 =============================================================================
