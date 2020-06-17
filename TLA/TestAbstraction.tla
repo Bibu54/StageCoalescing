@@ -322,6 +322,13 @@ THEOREM ASSUME NEW P(_,_), ([](\A x : [](\A y : P(x,y))))
         PROVE (\A x : [][](\A y : P(x,y)))
         OBVIOUS
 
+\* Ne fonctionne pas non plus, alors que c'est une tautologie.
+\* Explication (possible) : la formule à prouver est transformée, pas celle
+\* en hypothèse.
+THEOREM ASSUME NEW P(_,_), ([](\A x : [](\A y : P(x,y))))
+        PROVE ([]\A x : [](\A y : P(x,y)))
+        OBVIOUS
+
 (* Ne fonctionne pas, le prouveur n'essaie pas de transformer des sous-formules
  * en dessous d'un symbole []    *)
 THEOREM ASSUME NEW P(_,_)
@@ -370,5 +377,5 @@ identiques modulo symétrie de l'égalité. (c'est peut-être déjà implément�
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Jun 16 20:16:11 CEST 2020 by raphael
+\* Last modified Wed Jun 17 09:08:36 CEST 2020 by raphael
 \* Created Mon Jun 15 10:15:33 CEST 2020 by raphael
