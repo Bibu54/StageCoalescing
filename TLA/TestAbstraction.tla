@@ -46,6 +46,7 @@ THEOREM ASSUME TEMPORAL A(_), STATE S
 OBVIOUS
 
 \* Mais c'est embêtant non ?
+\* sm: oui, clairement, c'est à corriger ...
 
 ----------------------------------------------------------------------------
 
@@ -152,6 +153,7 @@ THEOREM ASSUME NEW P(_), NEW Q(_)
         OBVIOUS
 
 \* Ne fonctionne pas
+\* sm : fonctionne pour moi ?!
 THEOREM ASSUME NEW P(_), NEW Q(_), (\A y : ([]P(y)) /\ (\A z : []Q(z)))
         PROVE (\A x : ([]P(x)) /\ ([]Q(x)))
         OBVIOUS
@@ -178,6 +180,7 @@ THEOREM ASSUME TEMPORAL P(_), TEMPORAL Q(_)
         OBVIOUS
 
 \* Ne fonctionne pas
+\* sm : ici, cela ne fonctionne pas pour moi non plus -- plus précisément, C-G C-G passe, C-G C-P non 
 THEOREM ASSUME TEMPORAL P(_), TEMPORAL Q(_), (\A y : ([]P(y)) /\ (\A z : []Q(z)))
         PROVE (\A x : ([]P(x)) /\ ([]Q(x)))
         OBVIOUS
@@ -241,6 +244,9 @@ THEOREM ASSUME CONSTANT P
         BY PTL
         
 \* Fonctionne
+\* sm: je pense que c'est dû au pré-traitement qui promeut toute formule P prouvée
+\*     dans un contexte "[]" (hypothèses exclusivement non-temporelles ou []...)
+\*     à la formule []P
 THEOREM ASSUME CONSTANT P, P
         PROVE []P
         BY PTL
@@ -251,6 +257,7 @@ THEOREM ASSUME CONSTANT P, P
 (* Ici :
  *  - SUFFICES P est accepté (pas normal a priori),
  *  - QED non (normal)  *)
+\* sm: merci -- c'est un bug que je ne connaissais pas
 THEOREM ASSUME TEMPORAL P \* , CONSTANT Q, Q, TEMPORAL R, []R
         PROVE []P
         <1>. SUFFICES P
@@ -265,6 +272,7 @@ THEOREM ASSUME TEMPORAL P \* , CONSTANT Q, Q, TEMPORAL R, []R
  * de la forme P => []P
  * lorsque le contexte ne contient que des hypothèses rigides
  * (même si c'est une explication intuitive)  *)
+\* sm: pas sûr de comprendre le commentaire, je trouve normal le comportement observé
 THEOREM ASSUME TEMPORAL P, P
         PROVE []P
         <1>. SUFFICES P
@@ -282,6 +290,7 @@ THEOREM ASSUME NEW P(_)
         OBVIOUS
 
 \* Idem
+\* sm : c'est correct mais je suis surpris que ça passe ...
 THEOREM ASSUME NEW P(_)
         PROVE <>(\A x : P(x)) => (\A x : <>P(x))
         OBVIOUS
@@ -318,6 +327,7 @@ THEOREM ASSUME NEW P(_,_)
         OBVIOUS
 
 \* Ne fonctionne pas, c'est bizarre car il s'agit des mêmes hypothèse et conclusion
+\* sm : par ailleurs, "BY PTL" ne passe pas non plus
 THEOREM ASSUME NEW P(_,_), ([](\A x : [](\A y : P(x,y))))
         PROVE (\A x : [][](\A y : P(x,y)))
         OBVIOUS
@@ -325,6 +335,7 @@ THEOREM ASSUME NEW P(_,_), ([](\A x : [](\A y : P(x,y))))
 \* Ne fonctionne pas non plus, alors que c'est une tautologie.
 \* Explication (possible) : la formule à prouver est transformée, pas celle
 \* en hypothèse.
+\* sm: ici, "BY PTL" passe (ce n'est pas une surprise)
 THEOREM ASSUME NEW P(_,_), ([](\A x : [](\A y : P(x,y))))
         PROVE ([]\A x : [](\A y : P(x,y)))
         OBVIOUS
@@ -346,6 +357,7 @@ des formules en ajoutant des règles supplémentaires préservant la validité.
 Parmi celles déjà implémentées :
 []\A x : ... <=> \A x : []...
 <>\A x : ... <=> \A x : <>...
+\* sm : correcte pour \E, pour \A seulement l'implication "=>" est correcte
 On pourrait en rajouter certaines concernant \E.
 On pourrait également transformer des symboles logiques, afin qu'ils soient
 abstraits de la même manière.
@@ -353,6 +365,7 @@ Par exemple :
 A ~> B <=> [](A => <>B)
 <>A <=> \neg [] \neg A
 \E <=> \neg <> \neg A
+\* sm : je ne comprends pas la dernière ligne ??
 La dernière règle n'est pas utile lors d'une transformation avant traitement
 de la formule par un prouveur de logique classique, mais le devient lors d'une
 transformation destinée à un prouveur de logique temporelle, et inversement
@@ -377,5 +390,6 @@ identiques modulo symétrie de l'égalité. (c'est peut-être déjà implément�
 
 =============================================================================
 \* Modification History
+\* Last modified Thu Jun 18 15:39:32 CEST 2020 by merz
 \* Last modified Wed Jun 17 09:08:36 CEST 2020 by raphael
 \* Created Mon Jun 15 10:15:33 CEST 2020 by raphael
