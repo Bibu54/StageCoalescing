@@ -364,8 +364,10 @@ abstraits de la même manière.
 Par exemple :
 A ~> B <=> [](A => <>B)
 <>A <=> \neg [] \neg A
-\E <=> \neg <> \neg A
+\E <=> \neg <> \neg A   <-- ERREUR ICI
 \* sm : je ne comprends pas la dernière ligne ??
+\* raphaël : oui (je ne comprends pas non plus après coup) je pensais à :
+\* \E x : A <=> \neg \A x : \neg A
 La dernière règle n'est pas utile lors d'une transformation avant traitement
 de la formule par un prouveur de logique classique, mais le devient lors d'une
 transformation destinée à un prouveur de logique temporelle, et inversement
@@ -390,6 +392,6 @@ identiques modulo symétrie de l'égalité. (c'est peut-être déjà implément�
 
 =============================================================================
 \* Modification History
+\* Last modified Thu Jun 18 16:26:51 CEST 2020 by raphael
 \* Last modified Thu Jun 18 15:39:32 CEST 2020 by merz
-\* Last modified Wed Jun 17 09:08:36 CEST 2020 by raphael
 \* Created Mon Jun 15 10:15:33 CEST 2020 by raphael
