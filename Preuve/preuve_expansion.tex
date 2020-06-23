@@ -5,6 +5,7 @@
 \usepackage{amsmath, amssymb}
 \usepackage{stmaryrd}
 
+
 \title{Coalescing - Expansion d'opérateur}
 \author{Raphaël Le Bihan}
 
@@ -12,17 +13,32 @@
 \newcommand{\FOL}{\ensuremath{\textup{\tiny{}FOL}}}
 \newcommand{\false}{\textup{ff}}
 \newcommand{\true}{\textup{tt}}
+\newcommand{\M}{\ensuremath{\mathcal{M}}}
+
+\usepackage{xcolor}
+\newcommand{\raph}[1]{\textcolor{red}{#1}}
 
 \begin{document}
 
 \maketitle
 
-On étudie dans ce document le remplacement d'un opérateur défini par son expression dans une formule FOML.
-On cherche à montrer en particulier que pour un opérateur $d(\vec{x_i}) \triangleq e_d$ et une formule FOML $\phi$, si $\phi$ est valide une fois abstraite en FOL, alors la formule $\widetilde{\phi}$ obtenue en remplaçant chaque occurence de $d(e_i)$ par $e_d(\vec{e_i}/\vec{x_i})$ est également valide une fois abstraite en FOL.
+On étudie dans ce document le remplacement d'un opérateur par sa définition dans une formule FOML.
+On cherche à montrer en particulier que pour un opérateur $d(\vec{x_i}) \triangleq e_d$ et une formule FOML $\phi$, si $\phi$ est valide une fois abstraite en FOL, alors la formule $\widetilde{\phi}$ obtenue en remplaçant chaque occurence de $d(\vec{e_i})$ par $e_d(\vec{e_i}/\vec{x_i})$ est également valide une fois abstraite en FOL.
+
+On cherche alors à établir une correspondance sémantique entre les abstractions FOL de $\phi$ et $\widetilde{\phi}$.
+\[
+  \phi \to \phi_\FOL
+\]
+\[
+  \phi \to \widetilde{\phi} \to \widetilde{\phi}_\FOL
+\]
+
+\raph{%
+  J'effacerai ce schéma ou j'en ferai un mieux, mais pour l'instant il permet de comprendre quelles formules qu'on manipule.}
 
 \paragraph{Définition} Remplacement d'un opérateur défini\\
-Soit $\phi$ une formule FOML pouvant contenir des occurences de $d$.
-On définit récursivement $\widetilde{\phi}$ la formule obtenue par expansion de $d$ par :
+Soit $d(\vec{x_i}) \triangleq e_d$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
+On définit récursivement $\widetilde{\phi}$ la formule obtenue en remplaçant $d$ par sa définition dans $\phi$ par :
 \begin{align*}
   \widetilde{x} &\defeq x \\
   \widetilde{v} &\defeq v \\
@@ -31,21 +47,21 @@ On définit récursivement $\widetilde{\phi}$ la formule obtenue par expansion d
   \widetilde{\textup{FALSE}} &\defeq \textup{FALSE} \\
   \widetilde{e_1 \Rightarrow e_2} &\defeq \widetilde{e_1} \Rightarrow \widetilde{e_2} \\
   \widetilde{\forall x : e } &\defeq \forall x : \widetilde{e} \\
-  \widetilde{\nabla e} &\defeq \nabla \widetilde{e}
+  \widetilde{\nabla e} &\defeq \nabla \widetilde{e} \\
+  \widetilde{d(\vec{e_i})} &\defeq e_d(\vec{\widetilde{e_i}}/\vec{x_i})
 \end{align*}
 
+\raph{%
+  Cette définition correspond bien à ce qu'on veut faire.
+  Remarque 1 : Ici on n'a pas parlé des opérateurs définis autres que d.
+  Remarque 2 : On ne remplace pas \og{}qu'une fois\fg $d$, mais récursivement.
+  Par ex $d(d(e))$ donne $e_d([e_d(e/x)]/x)$ et pas $e_d([d(e)]/x)$.}
 
 \paragraph{Propriété 1}
 \label{prop_sem}
 Soit $d(\vec{x_i}) \triangleq e_i$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
-Soit $\mathcal{M}$ un modèle FOL où on peut interpréter $\widetilde{\phi}_\FOL$.
-Alors il existe $\mathcal{M}_d$ un modèle FOL où on peut interpréter $\phi_\FOL$ et $\textup{dom } \mathcal{M}_d = \textup{dom } \mathcal{M}$ tel que :
-\[
-  {\llbracket \widetilde{\phi}_\FOL \rrbracket}_{\mathcal{M}} = {\llbracket \phi_\FOL \rrbracket}_{\mathcal{M}_d}
-\]
-
-
-\paragraph{Preuve} On montre que la propriété est vraie pour $\phi_\FOL^y$ pour toute liste de variables rigides $y$ et on impose des conditions plus fortes sur $\mathcal{M}_d$.
+Soit $\mathcal{M}$ un modèle FOL où on peut interpréter $\widetilde{\phi}_\FOL$ (çàd les opérateurs générés lors de lors de l'abstraction de $\widetilde{\phi}$ sont interprétés dans ce modèle).
+On peut compléter $\mathcal{M}$ en un modèle FOL $\mathcal{M}_d$ où on peut interpréter $\phi_\FOL$ et tel que :
 \begin{enumerate}
 \item
   $\mathcal{M}_d$ et $\mathcal{M}$ ont même domaine, et même interprétation des opérateurs $op \in \mathcal{O}$ et des opérateurs générés lors de l'abstraction de $\widetilde{\phi}$ ;
@@ -53,9 +69,57 @@ Alors il existe $\mathcal{M}_d$ un modèle FOL où on peut interpréter $\phi_\F
   $\mathcal{M}_d$ et $\mathcal{M}$ ont même affectation sur les variables libres de $\widetilde{\phi}_\FOL$ ;
 \item
   Opérateurs générés lors de l'abstraction de $\phi$.
-  A DEFINIR !! Et à étudier !
+  \raph{A DEFINIR cf plus bas}
 \end{enumerate}
+et vérifiant :
+\[
+  {\llbracket \widetilde{\phi}_\FOL \rrbracket}_{\mathcal{M}} = {\llbracket \phi_\FOL \rrbracket}_{\mathcal{M}_d}
+\]
 
+\raph{%
+  En fait cette propriété a l'air vraie même en gardant exactement la même affectation dans $\mathcal{M}$ et $\mathcal{M}_d$, et en utilisant dans $\mathcal{M}_d$ une bonne définition pour les opérateurs générés lors de l'abstraction de $\phi$.
+  Dans ce cas, la preuve serait sans doute plus simple, puisqu'on parlerait DU modèle $\mathcal{M}_d$, pas besoin de faire des recombinaisons de modèles comme dans les cas de $\Rightarrow$ ou $\forall$.}
+
+\paragraph{Interprétation des nouveaux opérateurs dans $\mathcal{M}_d$}
+\raph{%
+  C'est ici que j'ai du mal à trouver la bonne définition.}
+On peut définir : \raph{ (ça devient rapidement difficilement lisible..) }
+\begin{itemize}
+\item
+  Pour tout opérateur $d(\vec{x_i}) = e_d$ son interprétation dans $\mathcal{M}_d$ une fois abstrait :
+  \[
+    \mathcal{I}_d(\framebox{$d_{\vec{\epsilon}}$}) : \vec{a_i} \in \textup{ dom } \mathcal{M}_d \mapsto
+    \llbracket {e_d}_\FOL^{\vec{x_i}} \rrbracket_{\mathcal{M}_d[x_i \mapsto a_i]}
+  \]
+  On évalue la définition en affectant à chaque paramètre l'argument correspondant.
+  Ceci permet ensuite dans la preuve pour le cas $d(\vec{e_i})$ :
+  \[
+    \llbracket d(\vec{e_i})_\FOL^y \rrbracket_{\mathcal{M}_d} =
+    \llbracket {e_d}_\FOL^{\vec{x_i}} \rrbracket_{\mathcal{M}_d[x_i \mapsto \llbracket {e_i}_\FOL^y \rrbracket_{\mathcal{M}_d} ]} =
+    \llbracket {e_d}_\FOL^{\vec{x_i}} ({e_i}_\FOL^y/{x_i}) \rrbracket_{\mathcal{M}_d}
+  \]
+  On peut montrer la seconde égalité, il s'agit d'un lemme de substitution en FOL.
+  On devra ensuite montrer que :
+  \[
+    \llbracket {e_d}_\FOL^{\vec{x_i}} ({e_i}_\FOL^y/{x_i}) \rrbracket_{\mathcal{M}_d} =
+    \llbracket {e_d(e_i/x_i)_\FOL^y} \rrbracket_{\mathcal{M}_d}
+  \]
+  Ceci est peut-être vrai si on choisit les bonnes définitions pour les interprétations dans $\M_d$ des opérateurs générés pendant l'abstraction de $\phi$.
+
+  On montre un exemple où il faut effectivement avoir posé les bonnes définitions, car les différents opérateurs obtenus sont différents : \\
+  Opérateur :
+  \[ d(x) \triangleq e_d \textup{ où } e_d = \nabla \forall y : y = x \]
+  Substitution :
+  \[ x \mapsto e = \nabla z \]
+  Formules une fois abstraites :
+  \[ e_\FOL = \framebox{$\lambda z : \nabla z$}(z) \]
+  \[ {e_d}_\FOL = \framebox{$\lambda x : \nabla \forall y : y = x$}(x) \]
+  \[ {e_d(e/x)}_\FOL = \framebox{$\lambda z : \nabla \forall y : y = \nabla z$}(z) \]
+\end{itemize}
+
+\paragraph{Preuve}
+\raph{La preuve n'est pas finie, en particulier les cas $\phi = d(\vec{e_i})$ et $\phi = \nabla \psi$.}\\
+On montre que la propriété est vraie pour $\phi_\FOL^y$ pour toute liste de variables rigides $y$.
 On fait une preuve par récurrence sur $\phi$.
 \begin{itemize}
 \item
@@ -88,7 +152,7 @@ On fait une preuve par récurrence sur $\phi$.
              \right . \\
     &= \left \{
       \begin{array}{l l}
-        \true & \textup{ si }  \llbracket {\widetilde{\phi_1}}_\FOL^y \rrbracket_{\mathcal{M}} \neq \true \textup{ ou } \llbracket {\widetilde{phi_2}}_\FOL^y \rrbracket_{\mathcal{M}} = \true \\
+        \true & \textup{ si }  \llbracket {\widetilde{\phi_1}}_\FOL^y \rrbracket_{\mathcal{M}} \neq \true \textup{ ou } \llbracket {\widetilde{\phi_2}}_\FOL^y \rrbracket_{\mathcal{M}} = \true \\
         \false & \textup{ sinon }
       \end{array}
              \right . \\
@@ -100,19 +164,51 @@ On fait une preuve par récurrence sur $\phi$.
 \item
   Cas $\phi = \forall x : \psi$.
   Par définition $\phi_\FOL^y = \forall x : {\psi}_\FOL^{xy}$ et $\widetilde{\phi}_\FOL^y = \forall x : \widetilde{\psi}_\FOL^{xy}$.
-  On pose $\mathcal{M}_d = \mathcal{M}$, qui vérifie bien les hypothèses 1, 2 et 3.
+  % On pose $\mathcal{M}_d = \mathcal{M}$, qui vérifie bien les hypothèses 1, 2 et 3.
+  % PAS DE SENS
   Alors :
   \begin{align*}
-    \llbracket \phi_\FOL^y \rrbracket_{\mathcal{M}_d}
-    &= \llbracket \forall x : \psi_\FOL^{xy} \rrbracket_{\mathcal{M}_d} \\
+    \llbracket \widetilde{\phi}_\FOL^y \rrbracket_{\mathcal{M}}
+    &= \llbracket \forall x : \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}} \\
     &= \left \{
       \begin{array}{l l}
-        \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}_d, \llbracket \psi_\FOL^{xy} \rrbracket_{\mathcal{M}[x \mapsto a]} = \true \\
+        \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}, \llbracket \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}[x \mapsto a]} = \true \\
         \false & \textup{ sinon }
       \end{array}
-                 \right .
+                 \right . \\
   \end{align*}
+  Pour tout $a \in \textup{dom}\mathcal{M}$ par HR il existe $\mathcal{M}_{da}$ vérifiant les différentes hypothèses par rapport à $\mathcal{M}[x \mapsto a]$.
+  Tous les modèles ont alors même domaine, interprétation des opérateurs, et affectation sur les variables libres de $\widetilde{\psi}_\FOL$ excepté $x$.
+  On pose $\mathcal{M}_d$ un modèle parmi les $\mathcal{M}_{da}$ (qui à $x$ associe une valeur quelconque).
+  Alors pour tout $a$, $\mathcal{M}_{da} = \mathcal{M}_d[x \mapsto a]$.
+  Alors :
+  \begin{align*}
+    \llbracket \widetilde{\phi}_\FOL^y \rrbracket_{\mathcal{M}}
+    &= \left \{
+      \begin{array}{l l}
+        \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}, \llbracket \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}[x \mapsto a]} = \true \\
+        \false & \textup{ sinon }
+      \end{array}
+                 \right . \\
+    &= \left \{
+      \begin{array}{l l}
+        \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}_d, \llbracket \psi_\FOL^{xy} \rrbracket_{\mathcal{M}_d[x \mapsto a]} = \true \\
+        \false & \textup{ sinon }
+      \end{array}
+                 \right . \\
+    &= \llbracket \forall x : \psi_\FOL^{xy} \rrbracket_{\mathcal{M}_d} \\
+    &= \llbracket \phi_\FOL^y \rrbracket_{\mathcal{M}_d}
+  \end{align*}
+
+\item
+  Cas $\phi = \nabla \psi$.
+\item
+  Cas $\phi = d(\vec{e_i})$.
 \end{itemize}
+
+\raph{%
+  C'est dans les deux derniers cas qu'on rencontre des problèmes.}
+
 
 
 \paragraph{Propriété 2}
