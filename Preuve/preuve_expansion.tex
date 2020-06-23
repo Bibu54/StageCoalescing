@@ -34,7 +34,7 @@ On cherche alors à établir une correspondance sémantique entre les abstractio
 \]
 
 \raph{%
-  J'effacerai ce schéma ou j'en ferai un mieux, mais pour l'instant il permet de comprendre quelles formules qu'on manipule.}
+  (J'effacerai ce schéma ou j'en ferai un mieux, mais pour l'instant il permet de comprendre quelles formules qu'on manipule.)}
 
 \paragraph{Définition} Remplacement d'un opérateur défini\\
 Soit $d(\vec{x_i}) \triangleq e_d$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
@@ -52,10 +52,11 @@ On définit récursivement $\widetilde{\phi}$ la formule obtenue en remplaçant 
 \end{align*}
 
 \raph{%
-  Cette définition correspond bien à ce qu'on veut faire.
-  Remarque 1 : Ici on n'a pas parlé des opérateurs définis autres que d.
+  Cette définition correspond bien à ce qu'on veut faire.\\
+  Remarque 1 : Ici on n'a pas parlé des opérateurs définis autres que d.\\
   Remarque 2 : On ne remplace pas \og{}qu'une fois\fg $d$, mais récursivement.
   Par ex $d(d(e))$ donne $e_d([e_d(e/x)]/x)$ et pas $e_d([d(e)]/x)$.}
+
 
 \paragraph{Propriété 1}
 \label{prop_sem}
@@ -68,8 +69,7 @@ On peut compléter $\mathcal{M}$ en un modèle FOL $\mathcal{M}_d$ où on peut i
 \item
   $\mathcal{M}_d$ et $\mathcal{M}$ ont même affectation sur les variables libres de $\widetilde{\phi}_\FOL$ ;
 \item
-  Opérateurs générés lors de l'abstraction de $\phi$.
-  \raph{A DEFINIR cf plus bas}
+  \raph{On devra donner aux opérateurs \framebox{$\lambda z : \nabla e$} et \framebox{$d_{\vec{\epsilon}}$} générés lors de l'abstraction de $\phi$ une interprétation dans $\mathcal{M}_d$ de sorte que la propriété soit vraie. Cf § suivant}
 \end{enumerate}
 et vérifiant :
 \[
@@ -77,13 +77,20 @@ et vérifiant :
 \]
 
 \raph{%
-  En fait cette propriété a l'air vraie même en gardant exactement la même affectation dans $\mathcal{M}$ et $\mathcal{M}_d$, et en utilisant dans $\mathcal{M}_d$ une bonne définition pour les opérateurs générés lors de l'abstraction de $\phi$.
-  Dans ce cas, la preuve serait sans doute plus simple, puisqu'on parlerait DU modèle $\mathcal{M}_d$, pas besoin de faire des recombinaisons de modèles comme dans les cas de $\Rightarrow$ ou $\forall$.}
+  Remarque : En fait cette propriété a l'air vraie même en gardant exactement la même affectation dans $\mathcal{M}$ et $\mathcal{M}_d$, et en utilisant dans $\mathcal{M}_d$ une bonne définition pour les opérateurs générés lors de l'abstraction de $\phi$.
+  Dans ce cas, la preuve serait plus simple, puisqu'on parlerait DU modèle $\mathcal{M}_d$, et il n'y aurait pas besoin de recombiner plusieurs modèles comme dans les cas de $\Rightarrow$ ou $\forall$.}
+
+\raph{%
+  Voici donc les points où je bloque dans ma preuve :
+  \begin{itemize}
+  \item
+    Quelle interprétation donner aux nouveaux opérateurs dans $\mathcal{M}_d$
+  \item
+    Cas $\nabla e$ et $d(\vec{e_i})$ de la preuve, mais je pense que ces cas seront faisables une fois qu'on saura quelle interprétation donner.
+  \end{itemize}}
 
 \paragraph{Interprétation des nouveaux opérateurs dans $\mathcal{M}_d$}
-\raph{%
-  C'est ici que j'ai du mal à trouver la bonne définition.}
-On peut définir : \raph{ (ça devient rapidement difficilement lisible..) }
+On peut définir :
 \begin{itemize}
 \item
   Pour tout opérateur $d(\vec{x_i}) = e_d$ son interprétation dans $\mathcal{M}_d$ une fois abstrait :
@@ -91,30 +98,43 @@ On peut définir : \raph{ (ça devient rapidement difficilement lisible..) }
     \mathcal{I}_d(\framebox{$d_{\vec{\epsilon}}$}) : \vec{a_i} \in \textup{ dom } \mathcal{M}_d \mapsto
     \llbracket {e_d}_\FOL^{\vec{x_i}} \rrbracket_{\mathcal{M}_d[x_i \mapsto a_i]}
   \]
-  On évalue la définition en affectant à chaque paramètre l'argument correspondant.
+  On évalue la définition, en affectant à chaque paramètre l'argument correspondant.
+
+  \raph{Remarque sur cette définition :}
+  
   Ceci permet ensuite dans la preuve pour le cas $d(\vec{e_i})$ :
   \[
     \llbracket d(\vec{e_i})_\FOL^y \rrbracket_{\mathcal{M}_d} =
     \llbracket {e_d}_\FOL^{\vec{x_i}} \rrbracket_{\mathcal{M}_d[x_i \mapsto \llbracket {e_i}_\FOL^y \rrbracket_{\mathcal{M}_d} ]} =
     \llbracket {e_d}_\FOL^{\vec{x_i}} ({e_i}_\FOL^y/{x_i}) \rrbracket_{\mathcal{M}_d}
   \]
-  On peut montrer la seconde égalité, il s'agit d'un lemme de substitution en FOL.
-  On devra ensuite montrer que :
+  La première égalité est vraie par définition.\\
+  On peut montrer la seconde égalité en utilisant d'un lemme de substitution en FOL.\\
+  On devra ensuite montrer que : \raph{ Je bloque ici }
   \[
     \llbracket {e_d}_\FOL^{\vec{x_i}} ({e_i}_\FOL^y/{x_i}) \rrbracket_{\mathcal{M}_d} =
     \llbracket {e_d(e_i/x_i)_\FOL^y} \rrbracket_{\mathcal{M}_d}
   \]
-  Ceci est peut-être vrai si on choisit les bonnes définitions pour les interprétations dans $\M_d$ des opérateurs générés pendant l'abstraction de $\phi$.
+  \raph{Ceci est vrai seulement si on choisit des bonnes interprétations dans $\M_d$ des opérateurs générés pendant l'abstraction de $\phi$.}
 
-  On montre un exemple où il faut effectivement avoir posé les bonnes définitions, car les différents opérateurs obtenus sont différents : \\
+  On montre dans la suite un exemple où il faut effectivement avoir défini les bonnes interprétations, car les opérateurs obtenus lors de l'abstraction sont différents : \\
   Opérateur :
   \[ d(x) \triangleq e_d \textup{ où } e_d = \nabla \forall y : y = x \]
   Substitution :
   \[ x \mapsto e = \nabla z \]
   Formules une fois abstraites :
-  \[ e_\FOL = \framebox{$\lambda z : \nabla z$}(z) \]
-  \[ {e_d}_\FOL = \framebox{$\lambda x : \nabla \forall y : y = x$}(x) \]
-  \[ {e_d(e/x)}_\FOL = \framebox{$\lambda z : \nabla \forall y : y = \nabla z$}(z) \]
+  \[ e_\FOL^z = \framebox{$\lambda z : \nabla z$}(z) \]
+  \[ {e_d}_\FOL^x = \framebox{$\lambda x : \nabla \forall y : y = x$}(x) \]
+  \[ {e_d(e/x)}_\FOL^z = \framebox{$\lambda z : \nabla \forall y : y = \nabla z$}(z) \]
+  Ici, si on donne n'importe quelle interprétation à \framebox{$\lambda z : \nabla z$} et \framebox{$\lambda x : \nabla \forall y : y = x$}, on n'aura pas a priori
+  \[
+    \llbracket \framebox{$\lambda x : \nabla \forall y : y = x$}(\framebox{$\lambda z : \nabla z$}(z)) \rrbracket_{\M_d}
+    =
+%    \mathcal{I}(\framebox{$\lambda x : \nabla \forall y : y = x$})(\mathcal{I}(\framebox{$\lambda z : \nabla z$})(a))
+%    =
+%    \mathcal{I}(\framebox{$\lambda z : \nabla \forall y : y = \nabla z$})(a)
+    \llbracket \framebox{$\lambda z : \nabla \forall y : y = \nabla z$}(z) \rrbracket_{\M_d}
+  \]
 \end{itemize}
 
 \paragraph{Preuve}
