@@ -1,0 +1,129 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{stmaryrd}
+
+\title{Coalescing - Expansion d'opérateur}
+\author{Raphaël Le Bihan}
+
+\newcommand{\defeq}{\ensuremath{\; \hat{=} \;}}
+\newcommand{\FOL}{\ensuremath{\textup{\tiny{}FOL}}}
+\newcommand{\false}{\textup{ff}}
+\newcommand{\true}{\textup{tt}}
+
+\begin{document}
+
+\maketitle
+
+On étudie dans ce document le remplacement d'un opérateur défini par son expression dans une formule FOML.
+On cherche à montrer en particulier que pour un opérateur $d(\vec{x_i}) \triangleq e_d$ et une formule FOML $\phi$, si $\phi$ est valide une fois abstraite en FOL, alors la formule $\widetilde{\phi}$ obtenue en remplaçant chaque occurence de $d(e_i)$ par $e_d(\vec{e_i}/\vec{x_i})$ est également valide une fois abstraite en FOL.
+
+\paragraph{Définition} Remplacement d'un opérateur défini\\
+Soit $\phi$ une formule FOML pouvant contenir des occurences de $d$.
+On définit récursivement $\widetilde{\phi}$ la formule obtenue par expansion de $d$ par :
+\begin{align*}
+  \widetilde{x} &\defeq x \\
+  \widetilde{v} &\defeq v \\
+  \widetilde{op(\vec{e_i})} &\defeq op(\vec{\widetilde{e_i}}) \\
+  \widetilde{e_1 = e_2} &\defeq \widetilde{e_1} = \widetilde{e_2} \\
+  \widetilde{\textup{FALSE}} &\defeq \textup{FALSE} \\
+  \widetilde{e_1 \Rightarrow e_2} &\defeq \widetilde{e_1} \Rightarrow \widetilde{e_2} \\
+  \widetilde{\forall x : e } &\defeq \forall x : \widetilde{e} \\
+  \widetilde{\nabla e} &\defeq \nabla \widetilde{e}
+\end{align*}
+
+
+\paragraph{Propriété 1}
+\label{prop_sem}
+Soit $d(\vec{x_i}) \triangleq e_i$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
+Soit $\mathcal{M}$ un modèle FOL où on peut interpréter $\widetilde{\phi}_\FOL$.
+Alors il existe $\mathcal{M}_d$ un modèle FOL où on peut interpréter $\phi_\FOL$ et $\textup{dom } \mathcal{M}_d = \textup{dom } \mathcal{M}$ tel que :
+\[
+  {\llbracket \widetilde{\phi}_\FOL \rrbracket}_{\mathcal{M}} = {\llbracket \phi_\FOL \rrbracket}_{\mathcal{M}_d}
+\]
+
+
+\paragraph{Preuve} On montre que la propriété est vraie pour $\phi_\FOL^y$ pour toute liste de variables rigides $y$ et on impose des conditions plus fortes sur $\mathcal{M}_d$.
+\begin{enumerate}
+\item
+  $\mathcal{M}_d$ et $\mathcal{M}$ ont même domaine, et même interprétation des opérateurs $op \in \mathcal{O}$ et des opérateurs générés lors de l'abstraction de $\widetilde{\phi}$ ;
+\item
+  $\mathcal{M}_d$ et $\mathcal{M}$ ont même affectation sur les variables libres de $\widetilde{\phi}_\FOL$ ;
+\item
+  Opérateurs générés lors de l'abstraction de $\phi$.
+  A DEFINIR !! Et à étudier !
+\end{enumerate}
+
+On fait une preuve par récurrence sur $\phi$.
+\begin{itemize}
+\item
+  Cas $\phi = x \; | \; y \; | \; \textup{FALSE}$.
+  Il suffit de poser $\mathcal{M}_d = \mathcal{M}$.
+\item
+  Cas $\phi = (\phi_1 \Rightarrow \phi_2)$.
+  Par définition ${\phi}_\FOL^y = {\phi_1}_\FOL^y \Rightarrow {\phi_2}_\FOL^y$ et  $\widetilde{\phi}_\FOL^y = \widetilde{\phi_1}_\FOL^y \Rightarrow \widetilde{\phi_2}_\FOL^y$.
+  Par hypothèse de récurrence sur $\phi_1$ et $\phi_2$ il existe $\mathcal{M}_{d1}$ et $\mathcal{M}_{d2}$ vérifiant les hypothèses 1, 2 et 3.
+  On pose $\mathcal{M}_d$ qui a même domaine et interprétation des opérateurs que $\mathcal{M}_{d1}$ et $\mathcal{M}_{d2}$, et dont l'affectation $\xi_d$ des variables est défini pour toute variable $x$ (flexible ou rigide) comme :
+  \[
+    \xi_d(x) = \left \{
+      \begin{array}{l l}
+        \xi_{d1}(x) & \mbox{ si } x \in fv(\phi_1) \\
+        \xi_{d2}(x) & \mbox{ sinon }
+      \end{array}
+    \right .
+  \]
+  Alors $\mathcal{M}_d$ vérifie les hypothèses 1, 2 et 3.
+  De plus : $\llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_{d1}} = \llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$
+  et  $\llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d2}} = \llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$.
+  Alors : 
+  \begin{align*}
+    \llbracket \phi_\FOL^y \rrbracket_{\mathcal{M}_d}
+    &= \left \{
+      \begin{array}{l l}
+        \true & \textup{ si }  \llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_d} \neq \true \textup{ ou } \llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_d} = \true \\
+        \false & \textup{ sinon }
+      \end{array}
+             \right . \\
+    &= \left \{
+      \begin{array}{l l}
+        \true & \textup{ si }  \llbracket {\widetilde{\phi_1}}_\FOL^y \rrbracket_{\mathcal{M}} \neq \true \textup{ ou } \llbracket {\widetilde{phi_2}}_\FOL^y \rrbracket_{\mathcal{M}} = \true \\
+        \false & \textup{ sinon }
+      \end{array}
+             \right . \\
+    & \textup{ par hypothèse de récurrence } \\
+    &= \llbracket {\widetilde{\phi}}_\FOL^y \rrbracket_{\mathcal{M}}
+  \end{align*}
+\item
+  Les cas $\phi = (\phi_1 = \phi_2)$ et $\phi = op(\vec{\phi_i})$ sont similaires.
+\item
+  Cas $\phi = \forall x : \psi$.
+  Par définition $\phi_\FOL^y = \forall x : {\psi}_\FOL^{xy}$ et $\widetilde{\phi}_\FOL^y = \forall x : \widetilde{\psi}_\FOL^{xy}$.
+  On pose $\mathcal{M}_d = \mathcal{M}$, qui vérifie bien les hypothèses 1, 2 et 3.
+  Alors :
+  \begin{align*}
+    \llbracket \phi_\FOL^y \rrbracket_{\mathcal{M}_d}
+    &= \llbracket \forall x : \psi_\FOL^{xy} \rrbracket_{\mathcal{M}_d} \\
+    &= \left \{
+      \begin{array}{l l}
+        \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}_d, \llbracket \psi_\FOL^{xy} \rrbracket_{\mathcal{M}[x \mapsto a]} = \true \\
+        \false & \textup{ sinon }
+      \end{array}
+                 \right .
+  \end{align*}
+\end{itemize}
+
+
+\paragraph{Propriété 2}
+Soit $d(\vec{x_i}) \triangleq e_d$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
+Si $\vDash_\FOL \phi_\FOL$ alors $\vDash_\FOL \widetilde{\phi}_\FOL$.
+
+\paragraph{Preuve}
+Pour tout modèle $\mathcal{M}$ de $\widetilde{\phi}_\FOL$ par la propriété 1 il existe $\mathcal{M}_d$ tel que
+\[
+  {\llbracket \widetilde{\phi}_\FOL \rrbracket}_{\mathcal{M}} = {\llbracket \phi_\FOL \rrbracket}_{\mathcal{M}_d} = tt
+\]
+car $\phi_\FOL$ est valide. Alors $\widetilde{\phi}_\FOL$ est valide.
+
+\end{document}
