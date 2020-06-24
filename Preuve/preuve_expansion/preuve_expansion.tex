@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage[french]{babel}
 \usepackage{amsmath, amssymb}
 \usepackage{stmaryrd}
@@ -21,6 +22,16 @@
 \usepackage{xcolor}
 \newcommand{\raph}[1]{\textcolor{red}{#1}}
 
+\definecolor{myblue}{rgb}{0,0.5,0.8}
+\newcommand{\mpar}[1]{\marginpar{\color{red}\footnotesize\raggedright#1}}
+\newcommand{\bpar}[1]{\marginpar{\color{myblue}\footnotesize\raggedright#1}}
+\addtolength{\marginparwidth}{1cm}
+\long\def\stephan#1{{\color{myblue} #1}}
+\newcommand{\TRUE}{\textsc{true}}
+\newcommand{\FALSE}{\textsc{false}}
+
+\newtheorem{prop}{Propriété}
+
 \begin{document}
 
 \maketitle
@@ -40,12 +51,14 @@ On cherche alors à établir une correspondance sémantique entre les abstractio
   (J'effacerai ce schéma ou j'en ferai un mieux, mais pour l'instant il permet de comprendre quelles formules qu'on manipule.)}
 
 \paragraph{Définition} Remplacement d'un opérateur défini\\
+\bpar{On suppose que $d$ n'apparaît pas dans $e_d$?}
 Soit $d(\vec{x_i}) \triangleq e_d$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
 On définit récursivement $\widetilde{\phi}$ la formule obtenue en remplaçant $d$ par sa définition dans $\phi$ par :
 \begin{align*}
   \widetilde{x} &\defeq x \\
   \widetilde{v} &\defeq v \\
-  \widetilde{op(\vec{e_i})} &\defeq op(\vec{\widetilde{e_i}}) \\
+  \widetilde{op(\vec{e_i})} &\defeq op(\vec{\widetilde{e_i}}) 
+  \qquad\text{\stephan{si $op$ différent de $d$}}\\
   \widetilde{e_1 = e_2} &\defeq \widetilde{e_1} = \widetilde{e_2} \\
   \widetilde{\textup{FALSE}} &\defeq \textup{FALSE} \\
   \widetilde{e_1 \Rightarrow e_2} &\defeq \widetilde{e_1} \Rightarrow \widetilde{e_2} \\
@@ -57,13 +70,17 @@ On définit récursivement $\widetilde{\phi}$ la formule obtenue en remplaçant 
 \raph{%
   Cette définition correspond bien à ce qu'on veut faire.\\
   Remarque 1 : Ici on n'a pas parlé des opérateurs définis autres que d.\\
-  Remarque 2 : On ne remplace pas \og{}qu'une fois\fg $d$, mais récursivement.
+  Remarque 2 : On ne remplace pas «qu'une fois» $d$, mais récursivement.
   Par ex $d(d(e))$ donne $e_d([e_d(e/x)]/x)$ et pas $e_d([d(e)]/x)$.}
 
+\stephan{%
+  $e_d(\vec{\widetilde{e_i}}/\vec{x_i})$ plutôt que $\widetilde{e_d}(\vec{\widetilde{e_i}}/\vec{x_i})$ suffit car $d$ ne peut apparaître dans $e_d$ et sinon ça ne terminerait pas. S'il y a plusieurs opérateurs définis (toujours sans récursion) il faudra les éliminer l'un après l'autre.}
 
-\paragraph{Propriété 1}
+% \paragraph{Propriété 1}
+\begin{prop}
 \label{prop_sem}
 Soit $d(\vec{x_i}) \triangleq e_i$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
+\bpar{Ici on a $\phi$, $\phi_{\FOL}$ et $\widetilde{\phi}_{\FOL}$, les deux dernières n'étant pas définies dans cette note \dots}
 Soit $\mathcal{M}$ un modèle FOL où on peut interpréter $\widetilde{\phi}_\FOL$ (çàd un modèle dans lequel les opérateurs \framebox{$\lambda z . \nabla e$} générés lors de l'abstraction de $\widetilde{\phi}$ ont une interprétation).
 On peut compléter $\M$ en un modèle FOL $\M_d$ où on peut interpréter $\phi_\FOL$ en ajoutant les interprétations suivantes pour les opérateurs \framebox{$\lambda z . \nabla e$} et \framebox{$d_{\vec{\epsilon}}$} générés lors de l'abstraction de $\phi$ :
 \begin{enumerate}
@@ -85,6 +102,7 @@ Alors :
 \[
   {\llbracket \widetilde{\phi}_\FOL \rrbracket}_{\mathcal{M}} = {\llbracket \phi_\FOL \rrbracket}_{\mathcal{M}_d}
 \]
+\end{prop}
 
 \raph{%
   Voici donc les points où je bloque dans ma preuve :
@@ -129,6 +147,7 @@ On peut définir :
   Opérateur :
   \[ d(x) \triangleq e_d \textup{ où } e_d = \nabla \forall y : y = x \]
   Substitution :
+  \bpar{cad, $x \mapsto \nabla z$ ?}
   \[ x \mapsto e = \nabla z \]
   Formules une fois abstraites :
   \[ e_\FOL^z = \framebox{$\lambda z : \nabla z$}(z) \]
@@ -159,6 +178,25 @@ On fait une preuve par récurrence sur $\phi$.
 \item
   Cas $\phi = (\phi_1 \Rightarrow \phi_2)$.
   Par définition ${\phi}_\FOL^y = {\phi_1}_\FOL^y \Rightarrow {\phi_2}_\FOL^y$ et  $\widetilde{\phi}_\FOL^y = \widetilde{\phi_1}_\FOL^y \Rightarrow \widetilde{\phi_2}_\FOL^y$.
+
+  %   Par hypothèse de récurrence sur $\phi_1$ et $\phi_2$ il existe $\mathcal{M}_{d1}$ et $\mathcal{M}_{d2}$ vérifiant les hypothèses 1, 2 et 3.
+  % On pose $\mathcal{M}_d$ qui a même domaine et interprétation des opérateurs que $\mathcal{M}_{d1}$ et $\mathcal{M}_{d2}$, et dont l'affectation $\xi_d$ des variables est défini pour toute variable $x$ (flexible ou rigide) comme :
+  % \[
+  %   \xi_d(x) = \left \{
+  %     \begin{array}{l l}
+  %       \xi_{d1}(x) & \mbox{ si } x \in fv(\phi_1) \\
+  %       \xi_{d2}(x) & \mbox{ sinon }
+  %     \end{array}
+  %   \right .
+  % \]
+  % \stephan{Je suppose qu'on fait de même pour interpréter les opérateurs introduits lors de l'abstraction, cad les faire coïncider avec $\mathcal{M}_{d1}$ si l'opérateur apparaît dans $\phi_1$ et avec $\mathcal{M}_{d2}$ sinon?}
+
+  % Alors $\mathcal{M}_d$ vérifie les hypothèses 1, 2 et 3.
+  % De plus : $\llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_{d1}} = \llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$
+  % et  $\llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d2}} = \llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$.
+
+  % \stephan{Je ne comprends pas pourquoi on peut affirmer ces égalités car $\phi_1$ et $\phi_2$ peuvent partager des symboles. Or, $\mathcal{M}_d$ et $\mathcal{M}_{d2}$ ne coïncident alors pas.}
+
   Par hypothèse de récurrence sur $\phi_1$ et $\phi_2$ : $\llbracket {\phi_1}_\FOL^y \rrbracket_{\M_d} = \llbracket {\widetilde{\phi_1}}_\FOL^y \rrbracket_{\M}$ et $\llbracket {\phi_2}_\FOL^y \rrbracket_{\M_d} = \llbracket {\widetilde{\phi_2}}_\FOL^y \rrbracket_{\M}$.
   Alors : 
   \begin{align*}
@@ -192,6 +230,15 @@ On fait une preuve par récurrence sur $\phi$.
         \false & \textup{ sinon }
       \end{array}
                  \right . \\
+  % \end{align*}
+  % Pour tout $a \in \textup{dom}\mathcal{M}$ par HR il existe $\mathcal{M}_{da}$ vérifiant les différentes hypothèses par rapport à $\mathcal{M}[x \mapsto a]$.
+  % Tous les modèles ont alors même domaine, interprétation des opérateurs, et affectation sur les variables libres de $\widetilde{\psi}_\FOL$ excepté $x$.
+  % \bpar{Remarque analogue au cas $\Rightarrow$}
+  % On pose $\mathcal{M}_d$ un modèle parmi les $\mathcal{M}_{da}$ (qui à $x$ associe une valeur quelconque).
+  % Alors pour tout $a$, $\mathcal{M}_{da} = \mathcal{M}_d[x \mapsto a]$.
+  % Alors :
+  % \begin{align*}
+  %   \llbracket \widetilde{\phi}_\FOL^y \rrbracket_{\mathcal{M}}
     &= \left \{
       \begin{array}{l l}
         \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}, \llbracket \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}[x \mapsto a]} = \true \\
@@ -212,14 +259,32 @@ On fait une preuve par récurrence sur $\phi$.
 \raph{%
   C'est dans les deux derniers cas qu'on rencontre des problèmes.}
 
+\stephan{%
+  Je pense en effet que si l'on veut suivre cette idée on devrait arriver à définir une seule interprétation $\mathcal{M}_d$ pour éviter d'avoir à fusionner des modèles éventuellement différents. Il peut être instructif de travailler sur l'exemple suivant.
+  \[\begin{array}{lll}
+      d(x) & \triangleq & \exists y: \nabla(x=y)\\
+      (d(\nabla\TRUE))_{\FOL} & = & \framebox{$d, \nabla\TRUE$}(\nabla\TRUE)\\
+      (d(\TRUE))_{\FOL} & = & \framebox{$d,\ast$}(\TRUE)\\
+      \widetilde{d(\nabla\TRUE)} & = & \exists y : \nabla((\nabla\TRUE) = y)\\
+      (\widetilde{d(\nabla\TRUE)})_{\FOL} & = & 
+         \exists y : \framebox{$\lambda y: \nabla((\nabla\TRUE) = y)$}(y)\\
+      \widetilde{d(\TRUE)} & = & \exists y : \nabla(\TRUE = y)\\
+      (\widetilde{d(\TRUE)})_{\FOL} & = & 
+         \exists y : \framebox{$\lambda y: \nabla(\TRUE = y)$}(y)
+  \end{array}\]
+(J'espère que je ne me suis pas trompé.) Comment définir les interprétations requises? Sachant que $d(\nabla\TRUE) \equiv d(\TRUE)$ mais cela n'a probablement peu d'importance.
 
+En fait, je me demande si c'est la bonne façon de procéder que de vouloir relier les abstractions de $d(e)$ et de $\widetilde{d(e)}$ plutôt que de suivre la piste indiquée dans le papier de 2014 qui fait le lien entre l'abstraction de $d(e)$ et l'interprétation de $d(e)$ dans un modèle de logique modale?
+}
 
-\paragraph{Propriété 2}
+% \paragraph{Propriété 2}
+\begin{prop}
 Soit $d(\vec{x_i}) \triangleq e_d$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
 Si $\vDash_\FOL \phi_\FOL$ alors $\vDash_\FOL \widetilde{\phi}_\FOL$.
+\end{prop}
 
 \paragraph{Preuve}
-Pour tout modèle $\mathcal{M}$ de $\widetilde{\phi}_\FOL$ par la propriété 1 il existe $\mathcal{M}_d$ tel que
+Pour tout modèle $\mathcal{M}$ de $\widetilde{\phi}_\FOL$ par la propriété \ref{prop_sem} il existe $\mathcal{M}_d$ tel que
 \[
   {\llbracket \widetilde{\phi}_\FOL \rrbracket}_{\mathcal{M}} = {\llbracket \phi_\FOL \rrbracket}_{\mathcal{M}_d} = tt
 \]
