@@ -1,0 +1,88 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{stmaryrd}
+
+
+\title{Coalescing - Brouillon}
+\author{Raphaël Le Bihan}
+
+\newcommand{\defeq}{\ensuremath{\; \hat{=} \;}}
+\newcommand{\FOL}{\ensuremath{\textup{\tiny{}FOL}}}
+\newcommand{\false}{\textup{ff}}
+\newcommand{\true}{\textup{tt}}
+\newcommand{\M}{\ensuremath{\mathcal{M}}}
+\newcommand{\I}{\ensuremath{\mathcal{I}}}
+\newcommand{\dom}{\ensuremath{\textup{ dom }}}
+
+\usepackage{xcolor}
+\newcommand{\raph}[1]{\textcolor{red}{#1}}
+
+\begin{document}
+
+\maketitle
+
+\paragraph{Contre-exemple}
+
+Opérateur : \[ d(x) \triangleq \nabla x \]
+Formules :
+\[ \phi = \forall z : \nabla z \land d(\nabla z) \]
+\[ \widetilde{\phi} = \forall z : \nabla z \land \nabla \nabla z \]
+Formules FOL :
+\[ \phi_\FOL = \forall z : \framebox{$\lambda z . \nabla z$}(z) \land \framebox{$d_{\nabla z}$}(\framebox{$\lambda z . \nabla z$}(z)) \]
+\[ \widetilde{\phi}_\FOL = \forall z :  \framebox{$\lambda z . \nabla z$}(z) \land \framebox{$\lambda z . \nabla \nabla z$}(z) \]
+Modèle FOL \M :
+\[ \dom \M = \{ \true, \false \} \]
+\[ \I(\framebox{$\lambda z . \nabla z$}) :
+  \left \{
+    \begin{array}{r c l}
+      \true & \mapsto & \true \\
+      \false & \mapsto & \false
+    \end{array}
+  \right . \]
+\[ \I(\framebox{$\lambda z . \nabla \nabla z$}) :
+  \left \{
+    \begin{array}{r c l}
+      \true & \mapsto & \false \\
+      \false & \mapsto & \true
+    \end{array}
+  \right . \]
+Complétion de $\M$ en $\M_d$ :
+\[ \I_d(\framebox{$d_\epsilon$}) : a \mapsto
+  \llbracket \framebox{$\lambda x . \nabla x$}(x) \rrbracket_{\M[x \mapsto a]} \]
+\[ \I_d(\framebox{$\lambda z . \nabla z$}) = \I(\framebox{$\lambda z . \nabla z$}) \]
+\[ \I_d(\framebox{$\lambda z . \nabla \nabla z$}) = \I(\framebox{$\lambda z . \nabla \nabla z$}) \]
+
+% La preuve par récurrence échoue alors car il est faux que pour toute sous formule $\psi$ de $\phi$ et $y$ liste de variables libres, $\llbracket \psi_\FOL^y \rrbracket_{\M_d} = \llbracket \widetilde{\psi}_\FOL^y \rrbracket_{\M_d}$.
+% En effet :
+Alors :
+
+\[ \llbracket \framebox{$d_{\nabla z}$}(\framebox{$\lambda z . \nabla z$}(z)) \rrbracket_{\M_d}
+  \neq
+  \llbracket \framebox{$\lambda z . \nabla \nabla z$}(z) \rrbracket_{\M_d} \]
+Car :
+\begin{align*}
+  \llbracket \framebox{$d_{\nabla z}$}(\framebox{$\lambda z . \nabla z$}(z)) \rrbracket_{\M_d}
+  % = \I_d(\framebox{$d_\epsilon$})(\llbracket \framebox{$\lambda z . \nabla z$}(z)) \rrbracket_{\M_d}) \\
+  &= \llbracket \framebox{$\lambda x . \nabla x$}(x) \rrbracket_{\M_d[x \mapsto \llbracket \framebox{${}_{\lambda z . \nabla z}$}(z)) \rrbracket_{\M_d}} \\
+  &= \llbracket x \rrbracket_{\M_d[x \mapsto \llbracket \framebox{${}_{\lambda z . \nabla z}$}(z)) \rrbracket_{\M_d}} \\
+  &= \llbracket \framebox{${\lambda z . \nabla z}$}(z)) \rrbracket_{\M_d} \\
+  &= \llbracket z \rrbracket_{\M_d}
+\end{align*}
+Mais :
+\begin{align*}
+  \llbracket \framebox{$\lambda z . \nabla \nabla z$}(z) \rrbracket_{\M_d}
+  &= \left \{
+    \begin{array}{l l}
+      \true & \textup{ si } \llbracket z \rrbracket_{\M_d} = \false \\
+      \false & \textup{ sinon }
+    \end{array}
+               \right . \\
+  &\neq \llbracket z \rrbracket_{\M_d}               
+\end{align*}
+
+\raph{%
+  Cela veut dire qu'il faut trouver une autre interprétation des \framebox{$d_{\vec{\epsilon}}$} dans $\M_d$, pour pouvoir satisfaire la propriété voulue.}
+\end{document}

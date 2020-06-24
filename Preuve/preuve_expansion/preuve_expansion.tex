@@ -5,6 +5,7 @@
 \usepackage[french]{babel}
 \usepackage{amsmath, amssymb}
 \usepackage{stmaryrd}
+\usepackage{comment}
 
 
 \title{Coalescing - Expansion d'opérateur}
@@ -15,6 +16,8 @@
 \newcommand{\false}{\textup{ff}}
 \newcommand{\true}{\textup{tt}}
 \newcommand{\M}{\ensuremath{\mathcal{M}}}
+\newcommand{\I}{\ensuremath{\mathcal{I}}}
+\newcommand{\dom}{\ensuremath{\textup{ dom }}}
 
 \usepackage{xcolor}
 \newcommand{\raph}[1]{\textcolor{red}{#1}}
@@ -78,25 +81,28 @@ On définit récursivement $\widetilde{\phi}$ la formule obtenue en remplaçant 
 \label{prop_sem}
 Soit $d(\vec{x_i}) \triangleq e_i$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
 \bpar{Ici on a $\phi$, $\phi_{\FOL}$ et $\widetilde{\phi}_{\FOL}$, les deux dernières n'étant pas définies dans cette note \dots}
-Soit $\mathcal{M}$ un modèle FOL où on peut interpréter $\widetilde{\phi}_\FOL$ (çàd les opérateurs générés lors de lors de l'abstraction de $\widetilde{\phi}$ sont interprétés dans ce modèle).
-On peut compléter $\mathcal{M}$ en un modèle FOL $\mathcal{M}_d$ où on peut interpréter $\phi_\FOL$ et tel que :
+Soit $\mathcal{M}$ un modèle FOL où on peut interpréter $\widetilde{\phi}_\FOL$ (çàd un modèle dans lequel les opérateurs \framebox{$\lambda z . \nabla e$} générés lors de l'abstraction de $\widetilde{\phi}$ ont une interprétation).
+On peut compléter $\M$ en un modèle FOL $\M_d$ où on peut interpréter $\phi_\FOL$ en ajoutant les interprétations suivantes pour les opérateurs \framebox{$\lambda z . \nabla e$} et \framebox{$d_{\vec{\epsilon}}$} générés lors de l'abstraction de $\phi$ :
 \begin{enumerate}
 \item
-  $\mathcal{M}_d$ et $\mathcal{M}$ ont même domaine, et même interprétation des opérateurs $op \in \mathcal{O}$ et des opérateurs générés lors de l'abstraction de $\widetilde{\phi}$ ;
+  Pour les opérateurs \framebox{$\lambda z . \nabla e$} ayant déjà une interprétation dans $\M$ (donc ayant déjà été générés lors de l'abstraction de $\widetilde{\phi}$) :
+  \[ \I_d(\framebox{$\lambda z . \nabla e$}) = \I(\framebox{$\lambda z . \nabla e$}) \]
 \item
-  $\mathcal{M}_d$ et $\mathcal{M}$ ont même affectation sur les variables libres de $\widetilde{\phi}_\FOL$ ;
+  Pour les opérateurs \framebox{$\lambda z . \nabla e$} n'étant pas interprétés dans $\M$ (donc n'ayant PAS été générés lors de l'abstraction de $\widetilde{\phi}$) :
+  \raph{A compléter}
 \item
-  \raph{On devra donner aux opérateurs \framebox{$\lambda z : \nabla e$} et \framebox{$d_{\vec{\epsilon}}$} générés lors de l'abstraction de $\phi$ une interprétation dans $\mathcal{M}_d$ de sorte que la propriété soit vraie. Cf § suivant}
+  \raph{ESSAI 1}\\
+  Pour les opérateurs \framebox{$d_{\vec{\epsilon}}$} : \raph{Finalement cette définition ne convient pas, voir le contre exemple dans le document pdf \og{}brouillon\fg .}
+  \[
+    \mathcal{I}_d(\framebox{$d_{\vec{\epsilon}}$}) : \vec{a_i} \in \textup{ dom } \mathcal{M}_d \mapsto
+    \llbracket {e_d}_\FOL^{\vec{x_i}} \rrbracket_{\mathcal{M}_d[x_i \mapsto a_i]}
+  \]
 \end{enumerate}
-et vérifiant :
+Alors :
 \[
   {\llbracket \widetilde{\phi}_\FOL \rrbracket}_{\mathcal{M}} = {\llbracket \phi_\FOL \rrbracket}_{\mathcal{M}_d}
 \]
 \end{prop}
-
-\raph{%
-  Remarque : En fait cette propriété a l'air vraie même en gardant exactement la même affectation dans $\mathcal{M}$ et $\mathcal{M}_d$, et en utilisant dans $\mathcal{M}_d$ une bonne définition pour les opérateurs générés lors de l'abstraction de $\phi$.
-  Dans ce cas, la preuve serait plus simple, puisqu'on parlerait DU modèle $\mathcal{M}_d$, et il n'y aurait pas besoin de recombiner plusieurs modèles comme dans les cas de $\Rightarrow$ ou $\forall$.}
 
 \raph{%
   Voici donc les points où je bloque dans ma preuve :
@@ -107,6 +113,8 @@ et vérifiant :
     Cas $\nabla e$ et $d(\vec{e_i})$ de la preuve, mais je pense que ces cas seront faisables une fois qu'on saura quelle interprétation donner.
   \end{itemize}}
 
+\begin{comment}
+  
 \paragraph{Interprétation des nouveaux opérateurs dans $\mathcal{M}_d$}
 On peut définir :
 \begin{itemize}
@@ -156,38 +164,43 @@ On peut définir :
   \]
 \end{itemize}
 
+\end{comment}
+
 \paragraph{Preuve}
 \raph{La preuve n'est pas finie, en particulier les cas $\phi = d(\vec{e_i})$ et $\phi = \nabla \psi$.}\\
+\raph{La partie de la preuve qui a déjà été écrite est indépendante de l'interprétation des nouveaux opérateurs dans $\M_d$.}\\
 On montre que la propriété est vraie pour $\phi_\FOL^y$ pour toute liste de variables rigides $y$.
 On fait une preuve par récurrence sur $\phi$.
 \begin{itemize}
 \item
   Cas $\phi = x \; | \; y \; | \; \textup{FALSE}$.
-  Il suffit de poser $\mathcal{M}_d = \mathcal{M}$.
+  Dans ce cas $\M_d = \M$ et $\phi_\FOL^y = \widetilde{\phi}_\FOL^y$ donc on peut conclure.
 \item
   Cas $\phi = (\phi_1 \Rightarrow \phi_2)$.
   Par définition ${\phi}_\FOL^y = {\phi_1}_\FOL^y \Rightarrow {\phi_2}_\FOL^y$ et  $\widetilde{\phi}_\FOL^y = \widetilde{\phi_1}_\FOL^y \Rightarrow \widetilde{\phi_2}_\FOL^y$.
-  Par hypothèse de récurrence sur $\phi_1$ et $\phi_2$ il existe $\mathcal{M}_{d1}$ et $\mathcal{M}_{d2}$ vérifiant les hypothèses 1, 2 et 3.
-  On pose $\mathcal{M}_d$ qui a même domaine et interprétation des opérateurs que $\mathcal{M}_{d1}$ et $\mathcal{M}_{d2}$, et dont l'affectation $\xi_d$ des variables est défini pour toute variable $x$ (flexible ou rigide) comme :
-  \[
-    \xi_d(x) = \left \{
-      \begin{array}{l l}
-        \xi_{d1}(x) & \mbox{ si } x \in fv(\phi_1) \\
-        \xi_{d2}(x) & \mbox{ sinon }
-      \end{array}
-    \right .
-  \]
-  \stephan{Je suppose qu'on fait de même pour interpréter les opérateurs introduits lors de l'abstraction, cad les faire coïncider avec $\mathcal{M}_{d1}$ si l'opérateur apparaît dans $\phi_1$ et avec $\mathcal{M}_{d2}$ sinon?}
 
-  Alors $\mathcal{M}_d$ vérifie les hypothèses 1, 2 et 3.
-  De plus : $\llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_{d1}} = \llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$
-  et  $\llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d2}} = \llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$.
+  %   Par hypothèse de récurrence sur $\phi_1$ et $\phi_2$ il existe $\mathcal{M}_{d1}$ et $\mathcal{M}_{d2}$ vérifiant les hypothèses 1, 2 et 3.
+  % On pose $\mathcal{M}_d$ qui a même domaine et interprétation des opérateurs que $\mathcal{M}_{d1}$ et $\mathcal{M}_{d2}$, et dont l'affectation $\xi_d$ des variables est défini pour toute variable $x$ (flexible ou rigide) comme :
+  % \[
+  %   \xi_d(x) = \left \{
+  %     \begin{array}{l l}
+  %       \xi_{d1}(x) & \mbox{ si } x \in fv(\phi_1) \\
+  %       \xi_{d2}(x) & \mbox{ sinon }
+  %     \end{array}
+  %   \right .
+  % \]
+  % \stephan{Je suppose qu'on fait de même pour interpréter les opérateurs introduits lors de l'abstraction, cad les faire coïncider avec $\mathcal{M}_{d1}$ si l'opérateur apparaît dans $\phi_1$ et avec $\mathcal{M}_{d2}$ sinon?}
 
-  \stephan{Je ne comprends pas pourquoi on peut affirmer ces égalités car $\phi_1$ et $\phi_2$ peuvent partager des symboles. Or, $\mathcal{M}_d$ et $\mathcal{M}_{d2}$ ne coïncident alors pas.}
+  % Alors $\mathcal{M}_d$ vérifie les hypothèses 1, 2 et 3.
+  % De plus : $\llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_{d1}} = \llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$
+  % et  $\llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d2}} = \llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$.
 
+  % \stephan{Je ne comprends pas pourquoi on peut affirmer ces égalités car $\phi_1$ et $\phi_2$ peuvent partager des symboles. Or, $\mathcal{M}_d$ et $\mathcal{M}_{d2}$ ne coïncident alors pas.}
+
+  Par hypothèse de récurrence sur $\phi_1$ et $\phi_2$ : $\llbracket {\phi_1}_\FOL^y \rrbracket_{\M_d} = \llbracket {\widetilde{\phi_1}}_\FOL^y \rrbracket_{\M}$ et $\llbracket {\phi_2}_\FOL^y \rrbracket_{\M_d} = \llbracket {\widetilde{\phi_2}}_\FOL^y \rrbracket_{\M}$.
   Alors : 
   \begin{align*}
-    \llbracket \phi_\FOL^y \rrbracket_{\mathcal{M}_d}
+    \llbracket \phi_\FOL^y \rrbracket_{\M_d}
     &= \left \{
       \begin{array}{l l}
         \true & \textup{ si }  \llbracket {\phi_1}_\FOL^y \rrbracket_{\mathcal{M}_d} \neq \true \textup{ ou } \llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_d} = \true \\
@@ -200,7 +213,6 @@ On fait une preuve par récurrence sur $\phi$.
         \false & \textup{ sinon }
       \end{array}
              \right . \\
-    & \textup{ par hypothèse de récurrence } \\
     &= \llbracket {\widetilde{\phi}}_\FOL^y \rrbracket_{\mathcal{M}}
   \end{align*}
 \item
@@ -208,41 +220,34 @@ On fait une preuve par récurrence sur $\phi$.
 \item
   Cas $\phi = \forall x : \psi$.
   Par définition $\phi_\FOL^y = \forall x : {\psi}_\FOL^{xy}$ et $\widetilde{\phi}_\FOL^y = \forall x : \widetilde{\psi}_\FOL^{xy}$.
-  % On pose $\mathcal{M}_d = \mathcal{M}$, qui vérifie bien les hypothèses 1, 2 et 3.
-  % PAS DE SENS
   Alors :
   \begin{align*}
-    \llbracket \widetilde{\phi}_\FOL^y \rrbracket_{\mathcal{M}}
-    &= \llbracket \forall x : \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}} \\
-    &= \left \{
-      \begin{array}{l l}
-        \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}, \llbracket \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}[x \mapsto a]} = \true \\
-        \false & \textup{ sinon }
-      \end{array}
-                 \right . \\
-  \end{align*}
-  Pour tout $a \in \textup{dom}\mathcal{M}$ par HR il existe $\mathcal{M}_{da}$ vérifiant les différentes hypothèses par rapport à $\mathcal{M}[x \mapsto a]$.
-  Tous les modèles ont alors même domaine, interprétation des opérateurs, et affectation sur les variables libres de $\widetilde{\psi}_\FOL$ excepté $x$.
-  \bpar{Remarque analogue au cas $\Rightarrow$}
-  On pose $\mathcal{M}_d$ un modèle parmi les $\mathcal{M}_{da}$ (qui à $x$ associe une valeur quelconque).
-  Alors pour tout $a$, $\mathcal{M}_{da} = \mathcal{M}_d[x \mapsto a]$.
-  Alors :
-  \begin{align*}
-    \llbracket \widetilde{\phi}_\FOL^y \rrbracket_{\mathcal{M}}
-    &= \left \{
-      \begin{array}{l l}
-        \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}, \llbracket \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}[x \mapsto a]} = \true \\
-        \false & \textup{ sinon }
-      \end{array}
-                 \right . \\
+    \llbracket \phi_\FOL^y \rrbracket_{\mathcal{M}_d}
+    &= \llbracket \forall x : \psi_\FOL^{xy} \rrbracket_{\mathcal{M}_d} \\
     &= \left \{
       \begin{array}{l l}
         \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}_d, \llbracket \psi_\FOL^{xy} \rrbracket_{\mathcal{M}_d[x \mapsto a]} = \true \\
         \false & \textup{ sinon }
       \end{array}
                  \right . \\
-    &= \llbracket \forall x : \psi_\FOL^{xy} \rrbracket_{\mathcal{M}_d} \\
-    &= \llbracket \phi_\FOL^y \rrbracket_{\mathcal{M}_d}
+  % \end{align*}
+  % Pour tout $a \in \textup{dom}\mathcal{M}$ par HR il existe $\mathcal{M}_{da}$ vérifiant les différentes hypothèses par rapport à $\mathcal{M}[x \mapsto a]$.
+  % Tous les modèles ont alors même domaine, interprétation des opérateurs, et affectation sur les variables libres de $\widetilde{\psi}_\FOL$ excepté $x$.
+  % \bpar{Remarque analogue au cas $\Rightarrow$}
+  % On pose $\mathcal{M}_d$ un modèle parmi les $\mathcal{M}_{da}$ (qui à $x$ associe une valeur quelconque).
+  % Alors pour tout $a$, $\mathcal{M}_{da} = \mathcal{M}_d[x \mapsto a]$.
+  % Alors :
+  % \begin{align*}
+  %   \llbracket \widetilde{\phi}_\FOL^y \rrbracket_{\mathcal{M}}
+    &= \left \{
+      \begin{array}{l l}
+        \true & \textup{ si pour } a \in \textup{dom} \mathcal{M}, \llbracket \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}[x \mapsto a]} = \true \\
+        \false & \textup{ sinon }
+      \end{array}
+                 \right . \\
+    & \textup{ par HR sur les } \M_d[x \mapsto a] \\
+    &= \llbracket \forall x : \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}} \\
+    &= \llbracket \widetilde{\phi}_\FOL^y \rrbracket_{\mathcal{M}}
   \end{align*}
 
 \item
