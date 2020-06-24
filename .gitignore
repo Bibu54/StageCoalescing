@@ -1,5 +1,5 @@
 TLA/*.tlaps
 TLA/*.toolbox
-Preuve/*.aux
-Preuve/*.log
-Preuve/*.pdf
+Preuve/*/*.aux
+Preuve/*/*.log
+Preuve/*/*.pdf
