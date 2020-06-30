@@ -6,6 +6,7 @@
 \usepackage{amsmath, amssymb}
 \usepackage{stmaryrd}
 \usepackage{comment}
+\usepackage{ulem}
 
 
 \title{Coalescing - Expansion d'opérateur}
@@ -196,9 +197,14 @@ On fait une preuve par récurrence sur $\phi$.
   % et  $\llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d2}} = \llbracket {\phi_2}_\FOL^y \rrbracket_{\mathcal{M}_{d}}$.
 
   % \stephan{Je ne comprends pas pourquoi on peut affirmer ces égalités car $\phi_1$ et $\phi_2$ peuvent partager des symboles. Or, $\mathcal{M}_d$ et $\mathcal{M}_{d2}$ ne coïncident alors pas.}
-
-  Par hypothèse de récurrence sur $\phi_1$ et $\phi_2$ : $\llbracket {\phi_1}_\FOL^y \rrbracket_{\M_d} = \llbracket {\widetilde{\phi_1}}_\FOL^y \rrbracket_{\M}$ et $\llbracket {\phi_2}_\FOL^y \rrbracket_{\M_d} = \llbracket {\widetilde{\phi_2}}_\FOL^y \rrbracket_{\M}$.
-  Alors : 
+  \raph{EN FAIT NON (il y a une faute..)}
+  \sout{%
+    Par hypothèse de récurrence sur $\phi_1$ et $\phi_2$ : $\llbracket {\phi_1}_\FOL^y \rrbracket_{\M_d} = \llbracket {\widetilde{\phi_1}}_\FOL^y \rrbracket_{\M}$ et $\llbracket {\phi_2}_\FOL^y \rrbracket_{\M_d} = \llbracket {\widetilde{\phi_2}}_\FOL^y \rrbracket_{\M}$.} \\
+  \raph{La rédaction correcte est :} \\
+  On considère les modèles $\M_1$ et $\M_2$ coincidant avec $\M$, et où sont interprétés les opérateurs générés respectivement par les abstractions de $\phi_1$ et $\phi_2$.
+  Par HR les modèles $\M_{d1}$ et $\M_{d2}$ vérifient $\llbracket {\phi_1}_\FOL^y \rrbracket_{\M_{d1}} = \llbracket {\widetilde{\phi_1}}_\FOL^y \rrbracket_{\M_1}$ et $\llbracket {\phi_2}_\FOL^y \rrbracket_{\M_{d2}} = \llbracket {\widetilde{\phi_2}}_\FOL^y \rrbracket_{\M_2}$. \\
+  \raph{Le problème est qu'on ne peut pas reconstituer $\M_d$ ensuite à partir de $\M_{d1}$ et $\M_{d2}$, par exemple avec le contre exemple donné dans \og{}brouillon\fg.}\\
+  \sout{Alors : }
   \begin{align*}
     \llbracket \phi_\FOL^y \rrbracket_{\M_d}
     &= \left \{
@@ -249,7 +255,6 @@ On fait une preuve par récurrence sur $\phi$.
     &= \llbracket \forall x : \widetilde{\psi}_\FOL^{xy} \rrbracket_{\mathcal{M}} \\
     &= \llbracket \widetilde{\phi}_\FOL^y \rrbracket_{\mathcal{M}}
   \end{align*}
-
 \item
   Cas $\phi = \nabla \psi$.
 \item

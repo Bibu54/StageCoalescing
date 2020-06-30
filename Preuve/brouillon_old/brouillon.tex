@@ -4,8 +4,6 @@
 \usepackage[french]{babel}
 \usepackage{amsmath, amssymb}
 \usepackage{stmaryrd}
-\usepackage{ulem}
-\usepackage{comment}
 
 
 \title{Coalescing - Brouillon}
@@ -26,41 +24,39 @@
 
 \maketitle
 
-\raph{Le contre exemple présenté montre que la propriété 1 ne peut pas être montrée par récurrence, peu importe les définitions données aux opérateurs \framebox{$\lambda z . \nabla e$} et \framebox{$d_{\vec{\epsilon}}$}.}
-
 \paragraph{Contre-exemple}
 
 Opérateur : \[ d(x) \triangleq \nabla x \]
 Formules :
-\[ \phi = \nabla z \Rightarrow d(\nabla z) \]
-\[ \widetilde{\phi} = \nabla z \Rightarrow \nabla \nabla z \]
+\[ \phi = \forall z : \nabla z \land d(\nabla z) \]
+\[ \widetilde{\phi} = \forall z : \nabla z \land \nabla \nabla z \]
 Formules FOL :
-\[ \phi_\FOL^z = \framebox{$\lambda z . \nabla z$}(z) \Rightarrow \framebox{$d_{\nabla z}$}(\framebox{$\lambda z . \nabla z$}(z)) \]
-\[ \widetilde{\phi}_\FOL^z = \framebox{$\lambda z . \nabla z$}(z) \Rightarrow \framebox{$\lambda z . \nabla \nabla z$}(z) \]
+\[ \phi_\FOL = \forall z : \framebox{$\lambda z . \nabla z$}(z) \land \framebox{$d_{\nabla z}$}(\framebox{$\lambda z . \nabla z$}(z)) \]
+\[ \widetilde{\phi}_\FOL = \forall z :  \framebox{$\lambda z . \nabla z$}(z) \land \framebox{$\lambda z . \nabla \nabla z$}(z) \]
 Modèle FOL \M :
 \[ \dom \M = \{ \true, \false \} \]
-\[ \I(\framebox{$\lambda z . \nabla z$}) = \_ \mapsto \true \]
-\[ \I(\framebox{$\lambda z . \nabla \nabla z$}) = \textup{id} \]
-\sout{Complétion de $\M$ en $\M_d$ :}
-\raph{Justement non, voir l'erreur dans la preuve pour le cas $\Rightarrow$.} \\
-On considère les modèles $\M_1$ et $\M_2$ coincidants avec $\M$ où ne sont interprétés que les prédicats générés lors de l'abstraction des sous-formules de $\widetilde{\phi}$ $\nabla z$ et $\nabla \nabla z$. \\
-\begin{comment}
+\[ \I(\framebox{$\lambda z . \nabla z$}) :
+  \left \{
+    \begin{array}{r c l}
+      \true & \mapsto & \true \\
+      \false & \mapsto & \false
+    \end{array}
+  \right . \]
+\[ \I(\framebox{$\lambda z . \nabla \nabla z$}) :
+  \left \{
+    \begin{array}{r c l}
+      \true & \mapsto & \false \\
+      \false & \mapsto & \true
+    \end{array}
+  \right . \]
+Complétion de $\M$ en $\M_d$ :
 \[ \I_d(\framebox{$d_\epsilon$}) : a \mapsto
   \llbracket \framebox{$\lambda x . \nabla x$}(x) \rrbracket_{\M[x \mapsto a]} \]
 \[ \I_d(\framebox{$\lambda z . \nabla z$}) = \I(\framebox{$\lambda z . \nabla z$}) \]
 \[ \I_d(\framebox{$\lambda z . \nabla \nabla z$}) = \I(\framebox{$\lambda z . \nabla \nabla z$}) \]
-\end{comment}
-Modèles $\M_1$ et $\M_2$ :
-\[ \I_1(\framebox{$\lambda z . \nabla z$}) = \I(\framebox{$\lambda z . \nabla z$}) \]
-\[ \I_2(\framebox{$\lambda z . \nabla \nabla z$}) = \I_2(\framebox{$\lambda z . \nabla \nabla z$}) \]
-Par HR on complète les modèles $\M_1$ et $\M_2$ en des modèles $\M_{d1}$ et $\M_{d2}$ :
-\[ \I_{d1}(\framebox{$\lambda z . \nabla z$}) =  \I_1(\framebox{$\lambda z . \nabla z$}) \]
-\[ \I_{d2}(\framebox{$\lambda z . \nabla \nabla z$}) =  \I_{d2}(\framebox{$\lambda z . \nabla \nabla z$}) \]
-\[ \I_{d2}(\framebox{$d_\epsilon$}) = ... \]
-\[ \I_{d2}(\framebox{$\lambda z . \nabla z$}) = ... \]
-Pour pouvoir reformer $\M_d$ à partir de  $\M_{d1}$ et $\M_{d2}$ il faut que $\I_{d2}(\framebox{$\lambda z . \nabla z$}) = \I_{d1}(\framebox{$\lambda z . \nabla z$})$.
-Si ce n'est pas le cas, alors on ne peut pas simplement fusionner $\M_{d1}$ et $\M_{d2}$ pour obtenir $\M_d$.
-On suppose que c'est le cas, et on montre que peu importe la définition donnée à \framebox{$d_{\lambda z . \nabla z}$} ...
+
+% La preuve par récurrence échoue alors car il est faux que pour toute sous formule $\psi$ de $\phi$ et $y$ liste de variables libres, $\llbracket \psi_\FOL^y \rrbracket_{\M_d} = \llbracket \widetilde{\psi}_\FOL^y \rrbracket_{\M_d}$.
+% En effet :
 Alors :
 
 \[ \llbracket \framebox{$d_{\nabla z}$}(\framebox{$\lambda z . \nabla z$}(z)) \rrbracket_{\M_d}

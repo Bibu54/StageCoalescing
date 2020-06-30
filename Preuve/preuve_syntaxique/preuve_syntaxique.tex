@@ -1,0 +1,189 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{stmaryrd}
+\usepackage{comment}
+\usepackage{ulem}
+\usepackage{ebproof}
+
+
+\title{%
+  Coalescing - Expansion d'opérateur \\
+  \normalsize Preuve en utilisant la déduction naturelle}
+\author{Raphaël Le Bihan}
+
+\newcommand{\defeq}{\ensuremath{\; \hat{=} \;}}
+\newcommand{\FOL}{\ensuremath{\textup{\tiny{}FOL}}}
+\newcommand{\false}{\textup{ff}}
+\newcommand{\true}{\textup{tt}}
+\newcommand{\M}{\ensuremath{\mathcal{M}}}
+\newcommand{\I}{\ensuremath{\mathcal{I}}}
+\newcommand{\dom}{\ensuremath{\textup{ dom }}}
+
+\usepackage{xcolor}
+\newcommand{\raph}[1]{\textcolor{red}{#1}}
+
+\definecolor{myblue}{rgb}{0,0.5,0.8}
+\newcommand{\mpar}[1]{\marginpar{\color{red}\footnotesize\raggedright#1}}
+\newcommand{\bpar}[1]{\marginpar{\color{myblue}\footnotesize\raggedright#1}}
+\addtolength{\marginparwidth}{1cm}
+\long\def\stephan#1{{\color{myblue} #1}}
+\newcommand{\TRUE}{\textsc{true}}
+\newcommand{\FALSE}{\textsc{false}}
+
+\newtheorem{prop}{Propriété}
+\newtheorem{lem}{Lemme}
+
+\begin{document}
+
+\maketitle
+
+On étudie dans ce document le remplacement d'un opérateur par sa définition dans une formule FOML.
+On cherche à montrer en particulier que pour un opérateur $d(\vec{x_i}) \triangleq e_d$ et une formule FOML $\phi$, si $\phi$ est valide une fois abstraite en FOL, alors la formule $\widetilde{\phi}$ obtenue en remplaçant chaque occurence de $d(\vec{e_i})$ par $e_d(\vec{e_i}/\vec{x_i})$ est également valide une fois abstraite en FOL.
+
+On cherche alors à établir une correspondance sémantique entre les abstractions FOL de $\phi$ et $\widetilde{\phi}$.
+\[
+  \phi \to \phi_\FOL
+\]
+\[
+  \phi \to \widetilde{\phi} \to \widetilde{\phi}_\FOL
+\]
+
+\raph{%
+  (J'effacerai ce schéma ou j'en ferai un mieux, mais pour l'instant il permet de comprendre quelles formules qu'on manipule.)}
+
+\paragraph{Définition} Remplacement d'un opérateur défini\\
+\bpar{On suppose que $d$ n'apparaît pas dans $e_d$?}
+Soit $d(\vec{x_i}) \triangleq e_d$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
+On définit récursivement $\widetilde{\phi}$ la formule obtenue en remplaçant $d$ par sa définition dans $\phi$ par :
+\begin{align*}
+  \widetilde{x} &\defeq x \\
+  \widetilde{v} &\defeq v \\
+  \widetilde{op(\vec{e_i})} &\defeq op(\vec{\widetilde{e_i}}) 
+  \qquad\text{\stephan{si $op$ différent de $d$}}\\
+  \widetilde{e_1 = e_2} &\defeq \widetilde{e_1} = \widetilde{e_2} \\
+  \widetilde{\textup{FALSE}} &\defeq \textup{FALSE} \\
+  \widetilde{e_1 \Rightarrow e_2} &\defeq \widetilde{e_1} \Rightarrow \widetilde{e_2} \\
+  \widetilde{\forall x : e } &\defeq \forall x : \widetilde{e} \\
+  \widetilde{\nabla e} &\defeq \nabla \widetilde{e} \\
+  \widetilde{d(\vec{e_i})} &\defeq e_d(\vec{\widetilde{e_i}}/\vec{x_i})
+\end{align*}
+
+\raph{%
+  Cette définition correspond bien à ce qu'on veut faire.\\
+  Remarque 1 : Ici on n'a pas parlé des opérateurs définis autres que d.\\
+  Remarque 2 : On ne remplace pas «qu'une fois» $d$, mais récursivement.
+  Par ex $d(d(e))$ donne $e_d([e_d(e/x)]/x)$ et pas $e_d([d(e)]/x)$.}
+
+\stephan{%
+  $e_d(\vec{\widetilde{e_i}}/\vec{x_i})$ plutôt que $\widetilde{e_d}(\vec{\widetilde{e_i}}/\vec{x_i})$ suffit car $d$ ne peut apparaître dans $e_d$ et sinon ça ne terminerait pas. S'il y a plusieurs opérateurs définis (toujours sans récursion) il faudra les éliminer l'un après l'autre.}
+
+\begin{prop}
+  \label{prop-sem}
+Soit $d(\vec{x_i}) \triangleq e_d$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
+Si $\vDash_\FOL \phi_\FOL$ alors $\vDash_\FOL \widetilde{\phi}_\FOL$.
+\end{prop}
+
+\paragraph{Preuve de la propriété \ref{prop-sem}}
+Par complétude et correction de la déduction naturelle, il suffit de montrer la propriété \ref{prop-syn}.
+
+\begin{prop}
+  \label{prop-syn}
+  Pour toute formule FOML $\phi$ et tout ensemble de formules FOML $\Gamma$,
+  si $\Gamma_\FOL \vdash \phi_\FOL$, alors $\widetilde{\Gamma}_\FOL \vdash \widetilde{\phi}_\FOL$.
+\end{prop}
+
+\paragraph{Preuve de la propriété \ref{prop-syn}}
+On fait une preuve par récurrence sur la dérivation de $\Gamma_\FOL \vdash \phi_\FOL$en considérant la dernière règle étudiée.
+
+La logique FOL étudiée ne contient pas les symboles $\land, \lor, \exists, \neg$.
+On étudiera seulement les règles suivantes : ax, RAA, $\Rightarrow_I$, $\Rightarrow_E$, $\forall_I$, $\forall_E$, $\bot_E$.
+
+On montre les cas RAA, $\Rightarrow_I$, $\Rightarrow_E$, $\bot_E$ en appliquant les définitions et l'hypothèse de récurrence.
+Le cas ax est trivial.
+On considère maintenant les cas $\forall_I$ et $\forall_E$.
+
+\begin{itemize}
+\item
+  Cas $\forall_I$ :\\
+  On suppose qu'il existe une preuve de
+  \begin{prooftree}
+    \hypo{ \Gamma_\FOL \vdash \psi }
+    \infer1[$\forall_I$]
+    { \Gamma_\FOL \vdash \phi_\FOL = \forall x : \psi }
+  \end{prooftree}, où $x \notin fv(\Gamma_\FOL)$.
+  
+  Par analyse de cas sur la définition de $\phi_\FOL$ on trouve que $\phi = \forall x : \phi_1$ avec ${\phi_1}_\FOL = \psi$ :
+  \begin{prooftree}
+    \hypo{ \Gamma_\FOL \vdash {\phi_1}_\FOL }
+    \infer1[$\forall_I$]
+    { \Gamma_\FOL \vdash \forall x : {\phi_1}_\FOL }
+  \end{prooftree}
+
+  On peut alors appliquer l'hypothèse de récurrence, il existe donc une dérivation de $\widetilde{\Gamma}_\FOL \vdash \widetilde{\phi_1}_\FOL$.
+  
+  On peut montrer que si $x \notin fv(e_\FOL)$, alors $x \notin fv(\widetilde{e}_\FOL)$ par récurrence sur $e$. On en déduit que $x \notin fv(\widetilde{\Gamma}_\FOL)$.
+
+  On applique donc la règle $\forall_I$ pour obtenir la dérivation suivante :
+  \begin{prooftree}
+    \hypo{ \widetilde{\Gamma}_\FOL \vdash \widetilde{\phi_1}_\FOL }
+    \infer1[$\forall_I$]
+    { \widetilde{\Gamma}_\FOL \vdash \forall x : \widetilde{\phi_1}_\FOL } 
+  \end{prooftree}
+  où $\forall x : \widetilde{\phi_1}_\FOL = \widetilde{(\forall x : \phi_1)}_\FOL = \widetilde{\phi}_\FOL$.
+
+
+  \vspace{1cm}
+\item
+  Cas $\forall_E$ : \raph{C'est ce cas qui est le plus dur} \\
+  On suppose qu'il existe une preuve de
+  \begin{prooftree}
+    \hypo{ \Gamma_\FOL \vdash \forall x : \psi }
+    \infer1[$\forall_E$]
+    { \Gamma_\FOL \vdash \phi_\FOL = \psi\{x \mapsto t\} }
+  \end{prooftree}.
+
+  \raph{%
+    On aimerait pouvoir appliquer l'hypothèse de récurrence sur $\Gamma_\FOL \vdash \forall x : \psi$. \\
+    Pour ça il suffirait de montrer qu'il existe $\theta$ tel que $\theta_\FOL = \psi$.
+    On veut montrer le lemme \ref{lemme-theta}. \\
+    Le problème est que ce n'est pas toujours le cas, voir le contre exemple proposé à la fin du document.}
+\end{itemize}
+
+\begin{lem}
+  \label{lemme-theta}
+  Soit $\phi$ une formule FOML, $\psi, t$ des formules FOL telles que $\phi_\FOL = \psi\{x \mapsto t\}$.
+  Alors il existe $\theta, \zeta$ des formules FOML telles que :
+  \begin{enumerate}
+  \item
+    $\theta_\FOL = \psi$
+  \item
+    $\zeta_\FOL = t$ ou $x \notin fv(\psi)$
+  \item
+    $\zeta$ est rigide, ou $x$ n'apparait qu'à des positions Leibniz dans $\theta$
+  \end{enumerate}
+\end{lem}
+
+\paragraph{Preuve du lemme \ref{lemme-theta}}
+
+\raph{On n'arrivera pas à montrer tous les cas.}\\
+On fait une preuve par récurrence sur $\psi$ et on montre la propriété avec $\phi_\FOL^z$ pour tout $z$.
+
+On arrive effectivement à montrer les cas où $\psi = v, y (\neq x), x, \textup{FALSE}$.
+La preuve fonctionne aussi pour les cas où $\psi = op(\vec{\psi_i}), \psi_1 \Rightarrow \psi_2, \psi_1 = \psi_2, \forall x : \psi_1$
+La preuve échoue pour le cas \(\psi = \framebox{$d_{\vec{\epsilon}}$}(\vec{\psi_i}) \).
+
+\paragraph{Contre-exemple au lemme \ref{lemme-theta}}
+
+On considère un opérateur défini $d$ prenant un argument dont la position n'est pas Leibniz. \\
+On pose :
+\[ \phi = d(v) \]
+Alors \(\phi_\FOL = \framebox{$d_v$}(v) = (\framebox{$d_v$}(x))\{x \mapsto v\} \).
+On pose :
+\[ \psi = \framebox{$d_v$}(x) \]
+\[ t = v \]
+On peut montrer qu'il n'existe pas de formule FOML $\theta$ telle que $\theta_\FOL = \psi$.
+\end{document}
