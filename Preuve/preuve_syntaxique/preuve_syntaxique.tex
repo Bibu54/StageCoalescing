@@ -97,7 +97,7 @@ Par complétude et correction de la déduction naturelle, il suffit de montrer l
 \end{prop}
 
 \paragraph{Preuve de la propriété \ref{prop-syn}}
-On fait une preuve par récurrence sur la dérivation de $\Gamma_\FOL \vdash \phi_\FOL$en considérant la dernière règle étudiée.
+On fait une preuve par récurrence sur la dérivation de $\Gamma_\FOL \vdash \phi_\FOL$ en considérant la dernière règle étudiée.
 
 La logique FOL étudiée ne contient pas les symboles $\land, \lor, \exists, \neg$.
 On étudiera seulement les règles suivantes : ax, RAA, $\Rightarrow_I$, $\Rightarrow_E$, $\forall_I$, $\forall_E$, $\bot_E$.
@@ -150,7 +150,7 @@ On considère maintenant les cas $\forall_I$ et $\forall_E$.
     On aimerait pouvoir appliquer l'hypothèse de récurrence sur $\Gamma_\FOL \vdash \forall x : \psi$. \\
     Pour ça il suffirait de montrer qu'il existe $\theta$ tel que $\theta_\FOL = \psi$.
     On veut montrer le lemme \ref{lemme-theta}. \\
-    Le problème est que ce n'est pas toujours le cas, voir le contre exemple proposé à la fin du document.}
+    Le problème est que ce n'est pas toujours le cas.}
 \end{itemize}
 
 \begin{lem}
@@ -165,6 +165,8 @@ On considère maintenant les cas $\forall_I$ et $\forall_E$.
   \item
     $\zeta$ est rigide, ou $x$ n'apparait qu'à des positions Leibniz dans $\theta$
   \end{enumerate}
+  \raph{Problème : ce lemme est faux, voir à la fin du document}\\
+  \raph{Solution : ce lemme est faux mais pour un cas qui ne nous intéresse pas dans la preuve de la propriété \ref{prop-syn}.}
 \end{lem}
 
 \paragraph{Preuve du lemme \ref{lemme-theta}}
@@ -186,4 +188,98 @@ On pose :
 \[ \psi = \framebox{$d_v$}(x) \]
 \[ t = v \]
 On peut montrer qu'il n'existe pas de formule FOML $\theta$ telle que $\theta_\FOL = \psi$.
+
+\vspace{1cm}
+
+\raph{%
+  Le contre exemple ci-dessus semble être un cas \og{}aberrant\fg dans la preuve de la propriété \ref{prop-syn},
+  en effet le séquent \(\Gamma_\FOL \vdash \forall x : \framebox{$d_v$}(x) \) ne semble pas valide (sauf si $\Gamma_\FOL$ est incohérente).\\
+  On montre effectivement que si le séquent précédent est dérivable, alors $\Gamma_\FOL$ est incohérente.}
+
+\vspace{1cm}
+
+\begin{lem}
+  \label{lemme-T}
+  Soient $\Gamma_\FOL$ un ensemble d'abstractions de formules FOML,
+  $d$ un opérateur défini unaire et dont la position n'est pas Leibniz,
+  $e$ une formule FOML flexible.\\
+  On suppose que \(\Gamma_\FOL \vDash \forall x : \framebox{$d_e$}(x) \).\\
+  On montre que $\Gamma_\FOL$ est incohérente.
+\end{lem}
+
+Pour montrer le lemme \ref{lemme-T} on aura besoin du lemme suivant :
+
+\begin{lem}
+  \label{lemme-S}
+  Soient \M un modèle FOL,
+  $d$ un opérateur défini unaire et dont la position n'est pas Leibniz,
+  $e$ une formule FOML flexible,
+  Pour tous $\phi$ formule FOML, $y$ ensemble de variables rigides,
+  la valuation $\llbracket \phi_\FOL^y \rrbracket_\M$ ne dépend pas de \(\I(\framebox{$d_e$})(a)\) pour
+  $a \in \dom \M$ tel que $a \neq \llbracket \phi_\FOL^{y'} \rrbracket_\M$ pour tout $y' \subseteq y$.
+\end{lem}
+
+\paragraph{Preuve du lemme \ref{lemme-S}}
+
+On fait une preuve par récurrence sur $\phi$.
+
+Les cas $\phi = x, v, FALSE$ sont immédiats.
+De même les cas $\phi = \phi_1 \Rightarrow \phi_2, \phi_1 = \phi_2, op(\vec{\phi_i})$ sont immédiats en appliquant l'hypothèse de récurrence.
+On parvient également à montrer les autres cas. \raph{Je n'ai pas fini de recopier, mais on peut finir la preuve}
+
+\paragraph{Preuve du lemme \ref{lemme-T}}
+
+Soit \M un modèle FOL de $\Gamma_\FOL$, où on peut interpréter $e_\FOL$.\\
+On pose $\M'$ qui coincide avec \M, sauf pour l'interprétation de \framebox{$d_e$} :
+\[ \I'(\framebox{$d_e$})(a) =
+  \left \{
+    \begin{array}{l l}
+      \I(\framebox{$d_e$})(a) & \textup{ si } a = \llbracket e_\FOL \rrbracket_\M \\
+      \false & \textup{ sinon }
+    \end{array}
+  \right . \]
+Par le lemme \ref{lemme-S} appliqué aux formules de $\Gamma_\FOL$, $\M'$ est également un modèle de $\Gamma_\FOL$. \\
+De plus \(\M' \nvDash \forall x : \framebox{$d_e$}(x)\) car $\dom \M'$ comporte au moins deux éléments ($\true$ et $\false$), pour l'un desquels \(\I'(\framebox{$d_e$})\) affecte $\false$.
+
+Ceci est absurde car on a supposé que \(\Gamma_\FOL \vDash \forall x : \framebox{$d_e$}(x)\).
+Alors $\Gamma_\FOL$ n'a aucun modèle et est incohérente par complétude.
+
+\vspace{1cm}
+
+\raph{%
+  On a donc montré que dans la preuve de la propriété \ref{prop-syn},
+  lorsque le cas proposé dans le contre-exemple apparaît,
+  appliquer le lemme est en fait inutile puisque la théorie $\Gamma_\FOL$ est incohérente.
+  On peut alors montrer que $\widetilde{\Gamma}_\FOL$ est également incohérente.}
+
+\begin{lem}
+  \label{lemme-theta-corr}
+  \raph{correction du lemme \ref{lemme-theta}}\\
+  Soit $\phi$ une formule FOML, $\psi, t$ des formules FOL telles que $\phi_\FOL = \psi\{x \mapsto t\}$.\\
+  On exclut le cas où $\psi$ contient une sous formule \(\framebox{$d_{\vec{\epsilon}}$}(\vec{\psi'_i})\)
+  où il existe $i$ tel que $\psi'_i$ est engendré par une formule rigide et $\epsilon_i \neq *$. \\
+  Alors il existe $\theta, \zeta$ des formules FOML telles que :
+  \begin{enumerate}
+  \item
+    $\theta_\FOL = \psi$
+  \item
+    $\zeta_\FOL = t$ ou $x \notin fv(\psi)$
+  \item
+    $\zeta$ est rigide, ou $x$ n'apparait qu'à des positions Leibniz dans $\theta$
+  \end{enumerate}
+\end{lem}
+
+\vspace{1cm}
+
+\raph{%
+  On remarque que le contre-exemple ci-dessus survient à cause de la manière dont sont abstraits les
+  opérateurs définis. \\
+  Définir
+  \[d(v) \defeq \framebox{$d_v$}(v)\]
+  est redondant car $v$ apparait deux fois.
+  Dans le contre-exemple, on peut alors construire une formule FOL ne pouvant pas être engendrée par l'abstraction d'une formule FOML. \\
+  Une solution serait de poser une définition différente pour l'abstraction d'un opérateur défini, où les arguments flexibles à une position non Leibniz ne seraient plus \og{}accessibles\fg en FOL, par exemple
+  \[d(v) \defeq \framebox{$d_v$}\]
+}
+
 \end{document}
