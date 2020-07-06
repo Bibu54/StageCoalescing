@@ -58,11 +58,12 @@ Le professeur supervisant le stage est Philippe Schnoebelen.
 
 \section{Introduction}
 
+\bpar{C'est exagéré \dots{} c'est un véhicle pour décrire un phénomène qui apparaît dans les preuves TLA+.}
 La logique modale du premier ordre (FOML pour First Order Modal Logic) est aujourd'hui utilisée pour la vérification de systèmes distribués.
 En enrichissant la logique du premier ordre avec un ou plusieurs opérateurs temporels, on peut exprimer différentes propriétés décrivant l'exécution d'un tel système.
 Il est alors possible de spécifier le comportement qu'un système devrait avoir \raph{(comportement attendu ?)} et vérifier que le comportement est conforme à la spécification.
 \raph{Fond : Peut-être à reformuler}\\
-\raph{Forme : Mettre un interligne plus grand entre deux paragraphes}
+\raph{Forme : Mettre un interligne plus grand entre deux paragraphes \stephan{(non)}}
 
 TLA$^+$ est un langage de spécification utilisant la logique FOML.
 Il s'appuie sur la logique TLA (pour Temporal Logic of Actions), introduite en 1990 par Leslie Lamport. \raph{Biblio}
@@ -75,6 +76,7 @@ Pour vérifier une propriété avec TLAPS, un utilisateur doit écrire une preuv
 Chaque obligation de preuve contient une formule FOML à prouver, et les hypothèses à utiliser pour prouver cette formule.
 Lors de la lecture de la preuve par TLAPS, chaque obligation de preuve est traitée par un prouveur automatique de logique classique du premier ordre (Isabelle, Zenon ou Z3) ou de logique temporelle (ls4).
 
+\bpar{L'abstraction permet d'utiliser des outils qui ne comprennent qu'une partie des opérateurs sur des formules FOML.}
 Il est alors nécessaire de définir une méthode d'abstraction correcte de la FOML vers la logique du premier ordre (FOL pour First Order Logic) et la logique modale (ML pour Modal Logic).
 Étant donnée une formule FOML $\phi$, on souhaite abstraire cette formule vers une formule FOL $\phi_\FOL$ telle que si $\vDash_\FOL \phi_\FOL$, alors $\vDash_\FOML \phi$ ; le principe est le même pour la logique modale.
 
