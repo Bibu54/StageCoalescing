@@ -60,9 +60,7 @@ Le professeur supervisant le stage est Philippe Schnoebelen.
 
 La logique modale du premier ordre (FOML pour First Order Modal Logic) est aujourd'hui utilisée pour la vérification de systèmes distribués.
 En enrichissant la logique du premier ordre avec un ou plusieurs opérateurs temporels, on peut exprimer différentes propriétés décrivant l'exécution d'un tel système.
-Il est alors possible de spécifier le comportement qu'un système devrait avoir \raph{(comportement attendu ?)} et vérifier que le comportement est conforme à la spécification.
-\raph{Fond : Peut-être à reformuler}\\
-\raph{Forme : Mettre un interligne plus grand entre deux paragraphes}
+Il est alors possible de spécifier le comportement qu'un système devrait avoir et vérifier que le comportement est conforme à la spécification.
 
 TLA$^+$ est un langage de spécification utilisant la logique FOML.
 Il s'appuie sur la logique TLA (pour Temporal Logic of Actions), introduite en 1990 par Leslie Lamport. \raph{Biblio}
@@ -78,8 +76,18 @@ Lors de la lecture de la preuve par TLAPS, chaque obligation de preuve est trait
 Il est alors nécessaire de définir une méthode d'abstraction correcte de la FOML vers la logique du premier ordre (FOL pour First Order Logic) et la logique modale (ML pour Modal Logic).
 Étant donnée une formule FOML $\phi$, on souhaite abstraire cette formule vers une formule FOL $\phi_\FOL$ telle que si $\vDash_\FOL \phi_\FOL$, alors $\vDash_\FOML \phi$ ; le principe est le même pour la logique modale.
 
-Une méthode syntaxique appelée \og{}coalescing\fg{} introduite en 2014 consiste à générer de nouveaux prédicats à partir des opérateurs \raph{(modaux), ne marche pas car on parle aussi du coalescing vers la logique ML} rencontrés.
+Une méthode syntaxique appelée \og{}coalescing\fg{} introduite en 2014 \raph{Biblio} consiste à générer de nouveaux prédicats à partir des opérateurs FOML rencontrés n'étant pas reconnus dans la logique FOL ou ML.
+On illustre cette méthode avec l'exemple suivant : l'opérateur $\square$ n'appartient pas à la logique FOL.
+Etant donné un prédicat $P$ la formule FOML
+\[ \phi = \square P \Rightarrow \square P \]
+est valide.
+On remarque qu'ici on peut déduire la validité de $\phi$ même sans savoir comment interpréter $\square$.
+Utiliser le coalescing sur $\phi$ génère la formule FOL
+\[ \phi_\FOL = \fbox{$\square P$} \Rightarrow \fbox{$\square P$} \]
+où \fbox{$\square P$} est un nouveau prédicat.
 
+L'article de 2014 \raph{Biblio} étend ce processus d'abstraction aux opérateurs définis.
+Un opérateur défini est un 
 
 
 
