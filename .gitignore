@@ -3,3 +3,6 @@ TLA/*.toolbox
 Preuve/*/*.aux
 Preuve/*/*.log
 Preuve/*/*.pdf
+Compte rendu/*.aux
+Compte rendu/*.log
+Compte rendu/*.pdf

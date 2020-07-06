@@ -1,0 +1,53 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{stmaryrd}
+\usepackage{comment}
+\usepackage{ulem}
+
+\title{Définitions utilisées pour le coalescing}
+\author{Raphaël Le Bihan}
+
+\newcommand{\defeq}{\ensuremath{\; \hat{=} \;}}
+\newcommand{\FOL}{\ensuremath{\textup{\tiny{}FOL}}}
+\newcommand{\false}{\textup{ff}}
+\newcommand{\true}{\textup{tt}}
+\newcommand{\M}{\ensuremath{\mathcal{M}}}
+\newcommand{\I}{\ensuremath{\mathcal{I}}}
+\newcommand{\dom}{\ensuremath{\textup{ dom }}}
+
+\usepackage{xcolor}
+\newcommand{\raph}[1]{\textcolor{red}{#1}}
+
+\definecolor{myblue}{rgb}{0,0.5,0.8}
+\newcommand{\mpar}[1]{\marginpar{\color{red}\footnotesize\raggedright#1}}
+\newcommand{\bpar}[1]{\marginpar{\color{myblue}\footnotesize\raggedright#1}}
+\addtolength{\marginparwidth}{1cm}
+\long\def\stephan#1{{\color{myblue} #1}}
+\newcommand{\TRUE}{\textsc{true}}
+\newcommand{\FALSE}{\textsc{false}}
+
+
+\newtheorem{prop}{Propriété}
+
+\begin{document}
+
+\maketitle
+
+On pose les définitions pour les formules manipulées dans les preuves. On reprend et on modifie certaines définitions de l'article de 2014.
+
+\paragraph{Formules FOML}
+
+Expression FOML :
+\[ e ::= \; x \; | \; v \; | \; op(\vec{e}) \; | \; e = e \; | \; e \Rightarrow e \; | \; \FALSE \; | \; \forall x : e \; | \; \nabla e \]
+
+\vspace{15pt}
+qqsf
+
+
+
+
+\end{document}

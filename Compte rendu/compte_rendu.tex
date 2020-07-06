@@ -1,0 +1,86 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{stmaryrd}
+\usepackage{fancyhdr}
+
+\newcommand{\defeq}{\ensuremath{\; \hat{=} \;}}
+\newcommand{\FOL}{\ensuremath{\textup{\tiny{}FOL}}}
+\newcommand{\FOML}{\ensuremath{\textup{\tiny{}FOML}}}
+\newcommand{\false}{\textup{ff}}
+\newcommand{\true}{\textup{tt}}
+\newcommand{\M}{\ensuremath{\mathcal{M}}}
+
+\usepackage{xcolor}
+\newcommand{\raph}[1]{\textcolor{red}{#1}}
+
+\definecolor{myblue}{rgb}{0,0.5,0.8}
+\newcommand{\mpar}[1]{\marginpar{\color{red}\footnotesize\raggedright#1}}
+\newcommand{\bpar}[1]{\marginpar{\color{myblue}\footnotesize\raggedright#1}}
+\addtolength{\marginparwidth}{1cm}
+\long\def\stephan#1{{\color{myblue} #1}}
+\newcommand{\TRUE}{\textsc{true}}
+\newcommand{\FALSE}{\textsc{false}}
+
+\newtheorem{prop}{Propriété}
+
+
+\pagestyle{fancy}
+\setlength{\parskip}{12pt}
+
+\title{%
+  Compte rendu de stage de L3\\
+  \vspace{8pt}
+  \large On-the-fly Abstractions of Formulas in Proofs
+Mixing First-Order Reasoning and Temporal Logic}
+\author{Raphaël Le Bihan}
+
+
+
+\begin{document}
+
+\fancyhead[LEO]{Compte rendu de stage}
+\fancyhead[REO]{Raphaël Le Bihan}
+\fancyfoot[CEO]{\thepage}
+
+\maketitle
+
+Ce stage est effectué au Loria (Nancy), et a lieu du 08/06/2020 au 17/07/2020.
+L'étudiant concerné est Raphaël Le Bihan en L3 au département d'informatique de l'ENS Paris-Saclay pendant l'année 2019-2020, l'encadrant du stage est Stephan Merz (Inria).
+Le professeur supervisant le stage est Philippe Schnoebelen.
+
+% METTRE TABLE DES MATIÈRES
+
+\clearpage
+
+\section{Introduction}
+
+La logique modale du premier ordre (FOML pour First Order Modal Logic) est aujourd'hui utilisée pour la vérification de systèmes distribués.
+En enrichissant la logique du premier ordre avec un ou plusieurs opérateurs temporels, on peut exprimer différentes propriétés décrivant l'exécution d'un tel système.
+Il est alors possible de spécifier le comportement qu'un système devrait avoir \raph{(comportement attendu ?)} et vérifier que le comportement est conforme à la spécification.
+\raph{Fond : Peut-être à reformuler}\\
+\raph{Forme : Mettre un interligne plus grand entre deux paragraphes}
+
+TLA$^+$ est un langage de spécification utilisant la logique FOML.
+Il s'appuie sur la logique TLA (pour Temporal Logic of Actions), introduite en 1990 par Leslie Lamport. \raph{Biblio}
+TLA permet de décrire le comportement de systèmes distribués comme une suite d'états, où un état est l'affectation d'une valeur aux différentes variables du système.
+Cette logique contient deux opérateurs temporels : $\square$ indiquant qu'une propriété est toujours vérifiée, et $'$ un opérateur décrivant la valeur d'une expression lors de l'état suivant.
+
+% TLA$^+$ est aujourd'hui accompagné d'un assistant de preuve TLAPS (pour TLA$^+$ Proof System), un système de preuve qmlkfj
+TLA$^+$ est aujourd'hui distribué avec TLAPS (pour TLA$^+$ Proof System), un assistant de preuve permettant de vérifier la validité de propriétés exprimées avec TLA$^+$.
+Pour vérifier une propriété avec TLAPS, un utilisateur doit écrire une preuve avec TLA$^+$, consistant en une suite d'étapes appelées obligations de preuve.
+Chaque obligation de preuve contient une formule FOML à prouver, et les hypothèses à utiliser pour prouver cette formule.
+Lors de la lecture de la preuve par TLAPS, chaque obligation de preuve est traitée par un prouveur automatique de logique classique du premier ordre (Isabelle, Zenon ou Z3) ou de logique temporelle (ls4).
+
+Il est alors nécessaire de définir une méthode d'abstraction correcte de la FOML vers la logique du premier ordre (FOL pour First Order Logic) et la logique modale (ML pour Modal Logic).
+Étant donnée une formule FOML $\phi$, on souhaite abstraire cette formule vers une formule FOL $\phi_\FOL$ telle que si $\vDash_\FOL \phi_\FOL$, alors $\vDash_\FOML \phi$ ; le principe est le même pour la logique modale.
+
+Une méthode syntaxique appelée \og{}coalescing\fg{} introduite en 2014 consiste à générer de nouveaux prédicats à partir des opérateurs \raph{(modaux), ne marche pas car on parle aussi du coalescing vers la logique ML} rencontrés.
+
+
+
+
+\end{document}
