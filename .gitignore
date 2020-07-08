@@ -6,3 +6,5 @@ Preuve/*/*.pdf
 Compte rendu/*.aux
 Compte rendu/*.log
 Compte rendu/*.pdf
+Compte rendu/*.bbl
+Compte rendu/*.blg
