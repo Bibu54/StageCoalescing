@@ -8,3 +8,5 @@ Compte rendu/*.log
 Compte rendu/*.pdf
 Compte rendu/*.bbl
 Compte rendu/*.blg
+Compte rendu/*.out
+Compte rendu/*.toc
