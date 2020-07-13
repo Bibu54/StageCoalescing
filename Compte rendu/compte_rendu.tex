@@ -32,6 +32,7 @@
 \newcommand{\FALSE}{\textsc{false}}
 
 \newtheorem{prop}{Propriété}
+\newtheorem{defin}{Définition}
 
 \bibliographystyle{plain}
 \pagestyle{fancy}
@@ -74,17 +75,18 @@ TLA représente l'exécution d'un système comme une suite d'états, où un éta
 Elle doit donc permettre de construire des formules afin de raisonner temporellement sur ces états.
 TLA est un cas particulier de logique modale du premier ordre (FOML pour First Order Modal Logic).
 Elle est constituée de la logique du premier ordre à laquelle s'ajoutent deux opérateurs temporels : $\square$ indiquant qu'une propriété est toujours vérifiée, et $'$ un opérateur décrivant la valeur d'une expression lors de l'état suivant.
-\textcolor{myblue}{TLA$^+$} autorise également la définition de nouveaux opérateurs $d(x_1, \cdots, x_n) \triangleq e$ où $e$ est une formule FOML.
+TLA$^+$ autorise également la définition de nouveaux opérateurs $d(x_1, \cdots, x_n) \triangleq e$ où $e$ est une formule FOML.
 
 TLA$^+$ est aujourd'hui distribué avec TLAPS \cite{TLAPSurl} (pour TLA$^+$ Proof System), un assistant de preuve permettant de vérifier la validité de propriétés exprimées avec TLA$^+$.
-Pour vérifier une propriété avec TLAPS, un utilisateur doit écrire une preuve avec TLA$^+$, consistant en une suite d'étapes \bpar{qui génèrent des?} appelées obligations de preuve.
+Pour vérifier une propriété avec TLAPS, un utilisateur doit écrire une preuve avec TLA$^+$, consistant en une suite d'étapes %\bpar{qui génèrent des?} appelées obligations de preuve.
+qui génèrent des obligations de preuve.
 Chaque obligation de preuve contient une formule FOML à prouver, et les hypothèses à utiliser pour prouver cette formule.
 Lors de la lecture de la preuve par TLAPS, chaque obligation de preuve est traitée par un prouveur automatique de logique classique du premier ordre (Isabelle, Zenon ou Z3) ou de logique temporelle (ls4).
 
 % \bpar{L'abstraction permet d'utiliser des outils qui ne comprennent qu'une partie des opérateurs sur des formules FOML.}
 Ces prouveurs automatiques utilisent des logiques ne comprenant qu'une partie de la FOML.
 Par exemple l'opérateur $\square$ est défini en logique temporelle mais pas en logique du premier ordre.
-Il est alors nécessaire de définir une méthode de traduction correcte de la FOML vers la logique du premier ordre (FOL pour First Order Logic) et la logique modale (ML pour Modal Logic). %\raph{différence TL et ML}
+Il est alors nécessaire de définir une méthode de traduction correcte de la FOML vers la logique du premier ordre (FOL pour First Order Logic) et la logique modale (ML pour Modal Logic).
 Étant donnée une formule FOML $\phi$, on souhaite traduire cette formule en une formule FOL $\phi_\FOL$ telle que si $\vDash_\FOL \phi_\FOL$, alors $\vDash_\FOML \phi$ ; le principe est le même pour la logique modale.
 
 Une méthode syntaxique appelée \og{}coalescing\fg{} (\og{}abstraction\fg{} en français) présentée en 2014 \cite{ARQNL2014} consiste à générer de nouveaux prédicats à partir des opérateurs FOML rencontrés n'étant pas reconnus dans la logique FOL ou ML.
@@ -100,7 +102,10 @@ $\phi_\FOL$ est valide et peut être prouvée en utilisant un prouveur automatiq
 On en déduit alors la validité de $\phi$ par correction de l'abstraction effectuée.
 
 L'article de 2014 \cite{ARQNL2014} définit l'abstraction de la FOML vers la FOL et la ML et montre sa correction.
-Il traite également le cas plus complexe de l'abstraction vers la FOL en présence d'opérateurs définis, et montre la complétude de l'abstraction pour la vérification de propriétés de {\color{myblue} sûreté} et \bpar{vraiment? sûreté seulement?} de vivacité, correspondant à la grande majorité des propriétés composants les spécifications en pratique. \raph{Utile de parler de la complétude ?} \stephan{non, rien à dire}
+Il traite également le cas plus complexe de l'abstraction vers la FOL en présence d'opérateurs définis.
+\begin{comment}
+  , et montre la complétude de l'abstraction pour la vérification de propriétés de {\color{myblue} sûreté} et \bpar{vraiment? sûreté seulement?} de vivacité, correspondant à la grande majorité des propriétés composants les spécifications en pratique. \raph{Utile de parler de la complétude ?} \stephan{non, rien à dire}
+\end{comment}
 
 \subsection{Objectifs du stage}
 
@@ -126,15 +131,15 @@ Un premier objectif sera d'étudier ce phénomène en confrontant ce résultat �
 
 Certaines formules FOML valides ne peuvent pas être prouvées en utilisant le processus d'abstraction.
 On peut considérer l'exemple suivant :
-étant donnée une formule $\phi$ FOML valide, \bpar{écrire $\Box\phi$ ici?} $\nabla \phi$ est également valide.
-Pourtant la formule $\nabla \phi$ est abstraite en une formule FOL \fbox{$\lambda \vec{z} . \nabla \phi$}$(\vec{z})$ où $\vec{z}$ est un ensemble de variables.
+étant donnée une formule $\phi$ FOML valide, $\Box \phi$ est également valide.
+Pourtant la formule $\Box \phi$ est abstraite en une formule FOL \fbox{$\Box \phi$}$(\vec{z})$ où $\vec{z}$ est un ensemble de variables.
 La formule FOL obtenue n'étant pas valide, le processus d'abstraction défini dans l'article ne permet pas de déduire la validité de $\phi$.
 
 Un deuxième objectif sera de chercher de nouvelles méthodes pour abstraire des formules FOML vers la FOL permettant de prouver d'avantage de tautologies FOML tout en gardant la correction.
 
 \section{Activités pendant le stage}
 
-Le stage a démarré le 08/06 et s'est terminé le 17/\textcolor{myblue}{07}, il a donc duré 6 semaines.
+Le stage a démarré le 08/06 et s'est terminé le 17/07, il a duré 6 semaines.
 J'ai effectué pendant le stage les activités suivantes :
 \begin{itemize}
 \item
@@ -173,178 +178,236 @@ On présente ici les définitions utilisées dans la suite du compte rendu.
 
 \subsection{Formules (ou expressions)}
 
-\bpar{commenter l'amalgame entre termes et formules?}
-On reprend les définitions données dans l'article de 2014.
+% \bpar{commenter l'amalgame entre termes et formules?}
+% On reprend les définitions données dans l'article de 2014.
 
-\bpar{utiliser les environnements «théorèmes» de \LaTeX?}
-\paragraph{Définition : formules FOML}
-Etant donné un ensemble $\mathcal{O}$ d'opérateurs munis d'une arité, on définit une formule FOML récursivement
-\[ e ::= \; x \; | \; v \; | \; op(\vec{e}) \; | \; e = e
-  \; | \; e \Rightarrow e \; | \; \FALSE \; | \; \forall x : e \; | \; \nabla e \]
-pour $op \in \mathcal{O}$, $x \in \mathcal{X}$, $v \in \mathcal{V}$ où $\mathcal{X}$ est l'ensemble des variables \emph{rigides}, $\mathcal{V}$ l'ensemble des variables \emph{flexibles}. $\mathcal{X}$ et $\mathcal{V}$ sont supposés infinis dénombrables et disjoints.
-On n'autorise ici la quantification que sur les variables rigides.
+On définit ici les formules FOML, ou expressions FOML.
+On ne fait pas ici la distinction entre les symboles de fonction et les prédicats de la logique du premier ordre usuelle, les deux sont représentés en FOML par des opérateurs.
+L'opérateur $\nabla$ permet de représenter indépendemment $\Box$ ou $'$ de TLA$^+$.
 
-Avec cette définition les opérateurs de $\mathcal{O}$ servent à définir à la fois les prédicats et les symboles de fonction de la logique du premier ordre.
+% Avec cette définition les opérateurs de $\mathcal{O}$ servent à définir à la fois les prédicats et les symboles de fonction de la logique du premier ordre.
 
+% \bpar{utiliser les environnements «théorèmes» de \LaTeX?}
+\begin{defin} \emph{Formules FOML} \\
+  Etant donné un ensemble $\mathcal{O}$ d'opérateurs munis d'une arité, on définit une formule FOML récursivement
+  \[ e ::= \; x \; | \; v \; | \; op(\vec{e}) \; | \; e = e
+    \; | \; e \Rightarrow e \; | \; \FALSE \; | \; \forall x : e \; | \; \nabla e \]
+  pour $op \in \mathcal{O}$, $x \in \mathcal{X}$, $v \in \mathcal{V}$ où $\mathcal{X}$ est l'ensemble des variables \emph{rigides}, $\mathcal{V}$ l'ensemble des variables \emph{flexibles}. $\mathcal{X}$ et $\mathcal{V}$ sont supposés infinis dénombrables et disjoints.
+  On n'autorise ici la quantification que sur les variables rigides.
+\end{defin}
 
-\paragraph{Définition : formules FOL et ML}
+% Avec cette définition les opérateurs de $\mathcal{O}$ servent à définir à la fois les prédicats et les symboles de fonction de la logique du premier ordre.
+
 On définit ensuite les formules FOL et ML.
-Les formules FOL sont des formules FOML ne contenant pas de variable flexible ni de sous-formule $\nabla e$.
-Les formules ML sont des formules FOML ne contenant pas de variable rigide, quantificateur, opérateur dans $\mathcal{O}$ ou égalité.
+
+\begin{defin} \emph{Formules FOL et ML} \\
+  Les formules FOL sont des formules FOML ne contenant pas de variable flexible ni de sous-formule $\nabla e$.
+  Les formules ML sont des formules FOML ne contenant pas de variable rigide, quantificateur, opérateur dans $\mathcal{O}$ ou égalité.
+\end{defin}
 
 \subsection{Sémantique}
 
+\begin{comment}
 \raph{A voir si c'est vraiment utile (il me semble que oui sinon on ne sait pas ce qu'est une formule FOML valide).
   Ici dans la première preuve on ne considère que des modèles FOL, et dans la deuxième preuve on utilise seulement la déduction naturelle.}
+\end{comment}
 
-La définition est légèrement différente de celle de l'article. \raph{A préciser ?}
-\stephan{plutôt non}
+% La définition est légèrement différente de celle de l'article. \raph{A préciser ?}
+% \stephan{plutôt non}
 
-\paragraph{Définition : structure de Kripke pour la FOML}
-On définit une structure de Kripke pour la FOML $\M = (\I, \xi, \mathcal{W}, R, \zeta)$ où :
-\begin{itemize}
-\item
-  $\I$ est une structure FOL usuelle, constituée d'un domaine $|\I|$ non vide et d'une interprétation des différents opérateurs de $\mathcal{O}$ comme des fonctions sur ce domaine ayant les arités correspondantes.
-  On suppose de plus ici que le domaine contient deux éléments distincts $\false$ et $\true$.
-\item
-  $\xi$ est une valuation des variables rigides vers $|\I|$.
-\item
-  $\mathcal{W}$ est un ensemble non vide d'états, et $R \subseteq \mathcal{W} \times \mathcal{W}$.
-\item
-  $\zeta : \mathcal{V} \times \mathcal{W} \to |\I|$ est une valuation des variables flexibles.
-\end{itemize}
+On définit une structure de Kripke pour la FOML.
 
-\medskip
+\begin{defin} \emph{Structure de Kripke pour la FOML} \\
+  Une structure de Kripke pour la FOML est un tuple $\M = (\I, \xi, \mathcal{W}, R, \zeta)$ où :
+  \begin{itemize}
+  \item
+    $\I$ est une structure FOL usuelle, constituée d'un domaine $|\I|$ non vide et d'une interprétation des différents opérateurs de $\mathcal{O}$ comme des fonctions sur ce domaine ayant les arités correspondantes.
+    On suppose de plus ici que le domaine contient deux éléments distincts $\false$ et $\true$.
+  \item
+    $\xi$ est une valuation des variables rigides vers $|\I|$.
+  \item
+    $\mathcal{W}$ est un ensemble non vide d'états, et $R \subseteq \mathcal{W} \times \mathcal{W}$.
+  \item
+    $\zeta : \mathcal{V} \times \mathcal{W} \to |\I|$ est une valuation des variables flexibles.
+  \end{itemize}
+\end{defin}
 
-On définit ensuite l'interprétation d'une formule dans une structure par récurrence sur la formule.
+%\medskip
 
-\begin{itemize}
-\item
-  $\llbracket x \rrbracket_{\M, w} = \xi(x)$ et $\llbracket v \rrbracket_{\M, w} = \zeta(v, w)$ pour $x \in \mathcal{X}$ et $v \in \mathcal{V}$
-\item
-  $\llbracket op(\vec{e}) \rrbracket_{\M, w} = \I(op)(\vec{\llbracket e \rrbracket_{\M, w}})$
-\item
-  $\llbracket e_1 = e_2 \rrbracket_{\M, w} = \left \{
-\begin{array}{l l}
-  \true & \textup{ si } \llbracket e_1 \rrbracket_{\M, w} = \llbracket e_2 \rrbracket_{\M, w} \\
-  \false & \textup{ sinon }
-\end{array} \right .$
-\item
-  $\llbracket e_1 \Rightarrow e_2 \rrbracket_{\M, w} = \left \{
-\begin{array}{l l}
-  \true & \textup{ si } \llbracket e_1 \rrbracket_{\M, w} \neq \true \textup{ ou }
-          \llbracket e_2 \rrbracket_{\M, w} = \true \\
-  \false & \textup{ sinon }
-\end{array} \right .$
-\item
-  $\llbracket \FALSE \rrbracket_{\M, w} = \false$
-\item
-  $\llbracket \forall x : e \rrbracket_{\M, w} = \left \{
-\begin{array}{l l}
-  \true & \textup{ si } \llbracket e \rrbracket_{\M[x \mapsto a], w} = \true \textup{ pour \textcolor{myblue}{tout} } a \in |\I| \\
-  \false & \textup{ sinon }
-\end{array} \right .$\\
-en notant $\M[x \mapsto a]$ la structure correspondant à $\M$ où l'élément $a$ est affecté à la variable $x$.
-\item
-  $\llbracket \nabla e \rrbracket_{\M, w} = \left \{
-\begin{array}{l l}
-  \true & \textup{ si } \llbracket e \rrbracket_{\M, w'} = \true \textup{ pour \textcolor{myblue}{tout $w'$ tel que} } (w, w') \in R \\
-  \false & \textup{ sinon }
-\end{array} \right .$
-\end{itemize}
+\begin{defin} \emph{Interprétation d'une formule FOML} \\
+  L'interprétation d'une formule FOML dans une structure $\M$ et un état $w$ est définie par récurrence sur la formule :
+  \begin{itemize}
+  \item
+    $\llbracket x \rrbracket_{\M, w} = \xi(x)$ et $\llbracket v \rrbracket_{\M, w} = \zeta(v, w)$ pour $x \in \mathcal{X}$ et $v \in \mathcal{V}$
+  \item
+    $\llbracket op(\vec{e}) \rrbracket_{\M, w} = \I(op)(\vec{\llbracket e \rrbracket_{\M, w}})$
+  \item
+    $\llbracket e_1 = e_2 \rrbracket_{\M, w} = \left \{
+      \begin{array}{l l}
+        \true & \textup{ si } \llbracket e_1 \rrbracket_{\M, w} = \llbracket e_2 \rrbracket_{\M, w} \\
+        \false & \textup{ sinon }
+      \end{array} \right .$
+  \item
+    $\llbracket e_1 \Rightarrow e_2 \rrbracket_{\M, w} = \left \{
+      \begin{array}{l l}
+        \true & \textup{ si } \llbracket e_1 \rrbracket_{\M, w} \neq \true \textup{ ou }
+                \llbracket e_2 \rrbracket_{\M, w} = \true \\
+        \false & \textup{ sinon }
+      \end{array} \right .$
+  \item
+    $\llbracket \FALSE \rrbracket_{\M, w} = \false$
+  \item
+    $\llbracket \forall x : e \rrbracket_{\M, w} = \left \{
+      \begin{array}{l l}
+        \true & \textup{ si } \llbracket e \rrbracket_{\M[x \mapsto a], w} = \true \textup{ pour tout } a \in |\I| \\
+        \false & \textup{ sinon }
+      \end{array} \right .$\\
+    en notant $\M[x \mapsto a]$ la structure correspondant à $\M$ où l'élément $a$ est affecté à la variable $x$.
+  \item
+    $\llbracket \nabla e \rrbracket_{\M, w} = \left \{
+      \begin{array}{l l}
+        \true & \textup{ si } \llbracket e \rrbracket_{\M, w'} = \true \textup{ pour tout $w'$ tel que } (w, w') \in R \\
+        \false & \textup{ sinon }
+      \end{array} \right .$
+  \end{itemize}
+\end{defin}
 
 \subsection{Opérateurs définis}
 
 Étant donné une définition d'opérateur : $d(\vec{x_i}) \triangleq e_d$ où $\vec{x_i}$ est un ensemble de variables rigides et $e_d$ est une expression FOML (ne contenant pas d'occurence de $d$), on ajoute dans la définition récursive d'une formule FOML l'expression $d(\vec{e})$.
-On définit ensuite son interprétation dans une structure FOML par \bpar{discutable mais je trouve ça plus facile à lire} $\llbracket d(\vec{e_i}) \rrbracket_{\M, w} = \llbracket e_d(\textcolor{myblue}{\vec{e}_i/\vec{x}_i}) \rrbracket_{\M, w}$.
+On définit ensuite son interprétation dans une structure FOML par %\bpar{discutable mais je trouve ça plus facile à lire}
+% $\llbracket d(\vec{e_i}) \rrbracket_{\M, w} = \llbracket e_d(\textcolor{myblue}{\vec{e}_i/\vec{x}_i}) \rrbracket_{\M, w}$.
+$\llbracket d(\vec{e_i}) \rrbracket_{\M, w} = \llbracket e_d(\vec{e}_i/\vec{x}_i) \rrbracket_{\M, w}$.
 
 \subsection{Expressions flexibles et rigides, positions Leibniz}
 
-\bpar{Cette abstraction est définie seulement dans la section suivante.}
-On définit récursivement l'abstraction d'une formule FOML $e$ vers la FOL en introduisant de nouveaux opérateurs.
-Pour cela on définit d'abord les notions d'expression rigide et flexible et de position Leibniz.
+% \bpar{Cette abstraction est définie seulement dans la section suivante.}
+% On définit récursivement l'abstraction d'une formule FOML $e$ vers la FOL en introduisant de nouveaux opérateurs.
+Les notions d'expression rigide et flexible et de position Leibniz sont utilisées pour l'abstraction des opérateurs définis.
 
-\paragraph{Définition : Expression FOML rigide, flexible}
-Une expression FOML $e$ est dite rigide ssi elle ne contient pas de variable flexible ou sous-expression $\nabla e'$.
-Sinon elle est dite flexible.
+En effet abstraire un opérateur défini $d$ par un opérateur FOL \fbox{$d$} est incorrect à cause du principe de Leibniz, qui affirme en FOL que pour tout opérateur $P$ unaire et $e_1, e_2$ des expressions, $(e_1 = e_2) \Rightarrow P(e_1) = P(e_2)$ est valide.
 
-\raph{Expliquer l'utilité des positions Leibniz ?} \stephan{oui}
+On considère par exemple l'opérateur défini $d(x) \triangleq \nabla x$.
+%, qui est satisfait en FOML lorsque l'argument s'interprète comme $\true$ à chaque état.
+La formule FOML $(v = \TRUE) \Rightarrow d(v) = d(\TRUE)$ n'est pas valide.
+Dans une structure FOML $v$ peut être affectée à l'élément $\true$ du domaine dans un certain état $w$
+et à l'élément $\false$ dans un état suivant $w'$.
+La partie gauche de l'implication est alors vérifiée mais pas la partie droite.
 
-\paragraph{Définition : Position Leibniz}
-Une position est un emplacement pour un argument d'un opérateur défini.
-Dans la définition $d(\vec{x_i}) \triangleq e_d$, la position correspondant à une variable $x_i$ est dite Leibniz ssi cette variable n'apparait pas dans une sous expression \bpar{j'éviterais d'utiliser $'$ car c'est un opérateur en TLA, aussi $e$ n'est pas utilisé ici} $\nabla e'$.
+Cette abstraction naive de $d$ vers \fbox{$d$} génère la formule FOL
+\( (v = \TRUE) \Rightarrow \fbox{$d$}(v) = \fbox{$d$}(\TRUE) \) qui est valide, l'abstraction est donc incorrecte.
 
+
+\begin{defin} \emph{Expression FOML rigide, flexible} \\
+  Une expression FOML $e$ est dite rigide ssi elle ne contient pas de variable flexible ou sous-expression $\nabla e'$.
+  Sinon elle est dite flexible.
+\end{defin}
+
+% \raph{Expliquer l'utilité des positions Leibniz ?} \stephan{oui}
+Une conséquence d'être rigide pour une expression FOML est d'être interprétée de façon identique indépendemment de l'état considéré.
+
+
+\begin{defin} \emph{Position Leibniz} \\
+  Une position est un emplacement pour un argument d'un opérateur défini.
+  Dans la définition $d(\vec{x_i}) \triangleq e_d$, la position correspondant à une variable $x_i$ est dite Leibniz ssi cette variable n'apparait pas dans une sous expression %\bpar{j'éviterais d'utiliser $'$ car c'est un opérateur en TLA, aussi $e$ n'est pas utilisé ici} $\nabla e'$.
+  $\nabla e$.
+\end{defin}
+
+L'interprétation d'une formule FOML $\llbracket d(\vec{e_i}) \rrbracket_{\M, w}$ est indépendante de l'interprétation $\llbracket e_i \rrbracket_{\M, w'}$ à un état suivant $w'$ si $e_i$ est à une position Leibniz.
 
 \subsection{Abstraction vers la FOL}
 
-La définition suivante pour l'abstraction d'un opérateur défini est différente de celle posée dans l'article\stephan{~\cite{ARQNL2014}}.
-Ici les positions non Leibniz sont retirées à l'opérateur FOL, alors qu'elle sont laissées dans l'article de la FOL.
-\raph{Utile de le préciser ?} \stephan{Peut-être donner un exemple après la définition?}
-Les propriétés de correction de l'abstraction données dans l'article sont préservées avec cette nouvelle définition, en reprenant les mêmes preuves qu'il suffit d'adapter pour le cas des opérateurs définis.
+\begin{comment}
+  La définition suivante pour l'abstraction d'un opérateur défini est différente de celle posée dans l'article\stephan{~\cite{ARQNL2014}}.
+  Ici les positions non Leibniz sont retirées à l'opérateur FOL, alors qu'elle sont laissées dans l'article de la FOL.
+  \raph{Utile de le préciser ?} \stephan{Peut-être donner un exemple après la définition?}
+  Les propriétés de correction de l'abstraction données dans l'article sont préservées avec cette nouvelle définition, en reprenant les mêmes preuves qu'il suffit d'adapter pour le cas des opérateurs définis.
+\end{comment}
 
-\paragraph{Définition : Abstraction vers la FOL}
-
-On définit récursivement l'abstraction vers la FOL d'une formule FOML $\phi$.
-% Pour $y$ une liste de variables rigides.
-\raph{On pose ici directement comme définition que l'abstraction d'un $\nabla e$ est \fbox{$\lambda z . \nabla e$} où $z$ est l'ensemble des variables libres rigides de $e$, pour ne pas s'encombrer avec la liste y.} \\
-\begin{itemize}
-\item
-  $x_\FOL = x$ et $v_\FOL = v$ pour $x \in \mathcal{X}, v \in \mathcal{V}$. En FOL $v$ est alors considérée comme une variable rigide.
-\item
-  $op(\vec{e})_\FOL = op(\vec{e_\FOL})$ pour $op \in \mathcal{O}$
-\item
-  $(e_1 = e_2)_\FOL = ({e_1}_\FOL = {e_2}_\FOL)$
-\item
-  $(e_1 \Rightarrow e_2)_\FOL = ({e_1}_\FOL \Rightarrow {e_2}_\FOL)$
-\item
-  $\FALSE_\FOL = \FALSE$
-\item
-  $(\forall x : e)_\FOL = \forall x : e_\FOL$
-\item
-  \( (\nabla e)_\FOL = \fbox{$\lambda \vec{x_i} . \nabla e$}(\vec{x_i}) \) où $\vec{x_i}$ est \bpar{c'est donc une liste \dots} l'ensemble des variables rigides libres de $e$ ordonné arbitrairement.
-  Ces opérateurs \stephan{lesquels?} sont identifiés modulo $\alpha$-équivalence.
-\item
-  \( d(\vec{e_i})_\FOL = \fbox{$d_{\vec{\epsilon_i}}$}(\vec{e_j}) \) où on note :
-  \( \epsilon_i = \left \{
-    \begin{array}{l l}
-      e_i & \textup{ si $e_i$ est flexible } \\
-      * & \textup{ sinon }
-    \end{array} \right . \)\\
-  et où les arguments $\vec{e_j}$ sont les expressions rigides parmi les $\vec{e_i}$ en conservant l'ordre des arguments
-\end{itemize}
+\begin{defin}
+  On définit récursivement l'abstraction vers la FOL d'une formule FOML $\phi$.
+  % Pour $y$ une liste de variables rigides.
+  % \raph{On pose ici directement comme définition que l'abstraction d'un $\nabla e$ est \fbox{$\lambda z . \nabla e$} où $z$ est l'ensemble des variables libres rigides de $e$, pour ne pas s'encombrer avec la liste y.} \\
+  \begin{itemize}
+  \item
+    $x_\FOL = x$ et $v_\FOL = v$ pour $x \in \mathcal{X}, v \in \mathcal{V}$. En FOL $v$ est alors considérée comme une variable rigide.
+  \item
+    $op(\vec{e})_\FOL = op(\vec{e_\FOL})$ pour $op \in \mathcal{O}$
+  \item
+    $(e_1 = e_2)_\FOL = ({e_1}_\FOL = {e_2}_\FOL)$
+  \item
+    $(e_1 \Rightarrow e_2)_\FOL = ({e_1}_\FOL \Rightarrow {e_2}_\FOL)$
+  \item
+    $\FALSE_\FOL = \FALSE$
+  \item
+    $(\forall x : e)_\FOL = \forall x : e_\FOL$
+  \item
+    \( (\nabla e)_\FOL = \fbox{$\lambda \vec{x_i} . \nabla e$}(\vec{x_i}) \) où $\vec{x_i}$ est %\bpar{c'est donc une liste \dots} l'ensemble des variables rigides libres de $e$ ordonné arbitrairement.
+    la liste des variables rigides libres de $e$.
+    Les opérateurs abstraits \fbox{$\lambda \vec{x_i} . \nabla e$} % \stephan{lesquels?}
+    sont identifiés modulo $\alpha$-équivalence.
+  \item
+    \( d(\vec{e_i})_\FOL = \fbox{$d_{\vec{\epsilon_i}}$}(\vec{e_j}) \) où on note :
+    \( \epsilon_i = \left \{
+      \begin{array}{l l}
+        e_i & \textup{ si $e_i$ est flexible } \\
+        * & \textup{ sinon }
+      \end{array} \right . \)\\
+    et où les arguments $\vec{e_j}$ sont les expressions rigides parmi les $\vec{e_i}$ en conservant l'ordre des arguments.
+  \end{itemize}
+\end{defin}
 
 
 \subsection{Remplacement d'opérateur défini}
 
-On se place dans le cas où les formules FOML ne peuvent contenir qu'un seul opérateur défini $d$, donné par sa définition $d(\vec{x_i}) \triangleq e_d$.
-On définit pour $\phi$ une formule FOML la formule $\widetilde{\phi}$ correspondante, où on remplace chaque occurence de $d$ par la formule $e_d$ en effectuant des substitutions pour les arguments de $d$. Formellement :
-\begin{itemize}
-\item
-  $\widetilde{x} = x$, $\widetilde{v} = v$ pour $x \in \mathcal{X}$, $v \in \mathcal{V}$
-\item
-  $\widetilde{op(\vec{x_i})} = op(\vec{\widetilde{x_i}})$ pour $op \in \mathcal{O}$
-\item
-  $\widetilde{(e_1 = e_2)} = (\widetilde{e_1} = \widetilde{e_2})$
-\item
-  $\widetilde{(e_1 \Rightarrow e_2)} = (\widetilde{e_1} \Rightarrow \widetilde{e_2})$
-\item
-  $\widetilde{\FALSE} = \FALSE$
-\item
-  $\widetilde{(\forall x : e)} = \forall : \widetilde{e}$
-\item
-  $\widetilde{\nabla e} = \nabla \widetilde{e}$
-\item
-  $\widetilde{d(\vec{e_i})} = e_d(\vec{\widetilde{e_i}/x_i})$
-\end{itemize}
+Pour un opérateur défini $d$ et une formule FOML $\phi$ on définit $\widetilde{\phi}$ la formule FOML correspondante où on remplace chaque occurence de $d$ par sa définition.
+
+\begin{defin} \emph{Remplacement de l'opérateur $d$} \\
+  % On se place dans le cas où les formules FOML ne peuvent contenir qu'un seul opérateur défini $d$, donné par sa définition $d(\vec{x_i}) \triangleq e_d$.
+  Pour $\phi$ une formule FOML ne pouvant contenir qu'un seul opérateur défini $d$ défini par $d(\vec{x_i}) \triangleq e_d$, on définit récursivement la formule $\widetilde{\phi}$ :
+  % où on remplace chaque occurence de $d$ par la formule $e_d$ en effectuant des substitutions pour les arguments de $d$
+  \begin{itemize}
+  \item
+    $\widetilde{x} = x$, $\widetilde{v} = v$ pour $x \in \mathcal{X}$, $v \in \mathcal{V}$
+  \item
+    $\widetilde{op(\vec{x_i})} = op(\vec{\widetilde{x_i}})$ pour $op \in \mathcal{O}$
+  \item
+    $\widetilde{(e_1 = e_2)} = (\widetilde{e_1} = \widetilde{e_2})$
+  \item
+    $\widetilde{(e_1 \Rightarrow e_2)} = (\widetilde{e_1} \Rightarrow \widetilde{e_2})$
+  \item
+    $\widetilde{\FALSE} = \FALSE$
+  \item
+    $\widetilde{(\forall x : e)} = \forall : \widetilde{e}$
+  \item
+    $\widetilde{\nabla e} = \nabla \widetilde{e}$
+  \item
+    $\widetilde{d(\vec{e_i})} = e_d(\vec{\widetilde{e_i}/x_i})$
+  \end{itemize}
+\end{defin}
 
 
 \section{Propriétés et preuves}
 
-\bpar{éviter «du papier de 2014»}
-\subsection{Propriétés du papier de 2014}
+% \bpar{éviter «du papier de 2014»}
+\subsection{Correction de l'abstraction}
 
+\begin{comment}
 L'article\stephan{~\cite{ARQNL2014}} montre \bpar{énoncer les propriétés qui sont utiles par la suite?} différentes propriétés, en particulier la correction de l'abstraction de la FOML vers la FOL et la ML.
 Les définitions utilisées ici étant différentes, on peut s'assurer que les propriétés énoncées dans l'article restent valides même avec ces définitions, en reprenant le même schéma de preuve que dans l'article.
+\end{comment}
+
+On peut montrer la propriété de correction suivante :
+\begin{prop} \emph{Correction de l'abstraction} \\
+  Pour $\Gamma$ un ensemble de formules FOML et $\phi$ une formule FOML, si $\Gamma \vDash \phi$ alors $\Gamma_\FOL \vDash_\FOL \phi_\FOL$.
+\end{prop}
+La preuve est similaire à celle présentée dans l'article~\cite{ARQNL2014}.
+On fait une preuve par l'absurde en supposant qu'il existe une structure FOML $\M$ et un état $w$ tels que :
+$\M, w \vDash \Gamma$ et $\M, w \nvDash \phi$.
+On peut alors construire une structure FOML $\I$ %où $\M$ et $\I$ ont même domaine, et où les opérateurs de $\phi$ sont interprétés comme .. (long)
+ayant même domaine que $\M$ et tel que pour toute expression FOML $e$, $\llbracket e \rrbracket_{\M, w} = \llbracket e_\FOL \rrbracket_\I$.
+Alors $\I \vDash_\FOL \Gamma_\FOL$ et $\I \nvDash_\FOL \phi_\FOL$, donc $\Gamma_\FOL \nvDash_\FOL \phi_\FOL$.
+
 
 \subsection{Remplacement de sous-formule par un opérateur défini}
 
@@ -352,21 +415,22 @@ Intuitivement remplacer une sous-formule FOML par un opérateur défini frais ne
 On peut en effet comparer ce procédé à l'expansion d'une macro.
 
 On reprend l'exemple présenté dans l'introduction.
-L'obligation de preuve contient la formule en TLA$^+$ \bpar{dire que $z$ est rigide} $(\forall x : \square P(x)) \Rightarrow \square P(z)$ qui correspond en FOML à $(\forall x : \nabla P(x)) \Rightarrow \nabla P(z)$ où $P$ est un opérateur défini dont on ignore la définition.
+L'obligation de preuve contient la formule en TLA$^+$ %\bpar{dire que $z$ est rigide}
+$(\forall x : \square P(x)) \Rightarrow \square P(z)$ qui correspond en FOML à $(\forall x : \nabla P(x)) \Rightarrow \nabla P(z)$ où $P$ est un opérateur défini dont on ignore la définition et $z$ une variable rigide.
 
 On peut vérifier que le processus d'abstraction donne la formule FOL :
 \( (\forall x : \fbox{$\lambda x . \nabla P(x)$}(x)) \Rightarrow \fbox{$\lambda z . \nabla P(z)$}(z) \)
 qui est valide puisque les deux opérateurs sont $\alpha$-équivalents.
 Que TLAPS ne permette pas de prouver automatiquement la formule en TLA$^+$ semble donc être une erreur d'implémentation.
 On veut donc essayer de montrer la propriété suivante :
-
 \begin{prop}
   \label{prop_sem}
 Soit $d(\vec{x_i}) \triangleq e_d$ un opérateur défini, et $\phi$ une formule FOML pouvant contenir des occurences de $d$.
 Si $\vDash_\FOL \phi_\FOL$ alors $\vDash_\FOL \widetilde{\phi}_\FOL$.
 \end{prop}
+qui implique que le remplacement de sous-formule par un opérateur défini en TLA$^+$ n'est pas nécessaire pour prouver automatiquement une obligation de preuve avec TLAPS.
 
-\subsection{Tentatives de preuve pour la propriété}
+\subsection{Preuve pour la propriété \ref{prop_sem}}
 
 \paragraph{Preuve sémantique}
 
@@ -382,11 +446,11 @@ On peut compléter $\M$ en un modèle FOL $\M_d$ où on peut interpréter $\phi_
 \item
   Pour les opérateurs \framebox{$\lambda z . \nabla e$} ayant déjà une interprétation dans $\M$ (donc ayant déjà été générés lors de l'abstraction de $\widetilde{\phi}$) :
   \[ \I_d(\framebox{$\lambda z . \nabla e$}) = \I(\framebox{$\lambda z . \nabla e$}) \]
-\item ... * une certaine définition pour les opérateurs générés lors de l'abstraction de $\phi$ *
+\item ... * une certaine définition pour les opérateurs générés lors de l'abstraction de $\phi$ * \label{def_opgen}
 \end{enumerate}
 \end{prop}
 
-La preuve de cette propriété par récurrence échoue car dans certains cas on doit recombiner des modèles, par exemple pour le cas $\phi = \phi_1 \Rightarrow \phi_2$ où on doit former $\M_d$ à partir des modèles $\M_{d1}$ et $\M_{d2}$ ce qui est impossible dans certains cas.
+La preuve de cette propriété par récurrence échoue car dans certains cas on doit recombiner des modèles, par exemple pour le cas $\phi = \phi_1 \Rightarrow \phi_2$ où on doit former $\M_d$ à partir des modèles $\M_{d1}$ et $\M_{d2}$ ce qui est impossible dans certains cas peu importe la définition choisie dans \ref{def_opgen}.
 
 \paragraph{Preuve syntaxique}
 
@@ -433,6 +497,8 @@ On applique donc la règle $\forall_I$ pour obtenir la dérivation suivante :\\
 où $\forall x : \widetilde{\phi_1}_\FOL = \widetilde{(\forall x : \phi_1)}_\FOL = \widetilde{\phi}_\FOL$.
 
 \bigskip \bigskip
+
+\raph{TODO expliquer exemple}
   
 Le cas $\forall_E$ pose problème car certaines formules FOL ne peuvent pas être formées en abstrayant des formules FOML.
 On peut s'en convaincre avec l'exemple suivant : on considère $d$ un opérateur défini unaire et dont la position n'est pas Leibniz, et $v$ une variable flexible.
