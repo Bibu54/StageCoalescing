@@ -1,0 +1,130 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{stmaryrd}
+\usepackage{comment}
+\usepackage{ulem}
+
+
+\title{Transformation de formule avant abstraction}
+\author{Raphaël Le Bihan}
+
+\newcommand{\defeq}{\ensuremath{\; \hat{=} \;}}
+\newcommand{\FOL}{\ensuremath{\textup{\tiny{}FOL}}}
+\newcommand{\false}{\textup{ff}}
+\newcommand{\true}{\textup{tt}}
+\newcommand{\M}{\ensuremath{\mathcal{M}}}
+\newcommand{\I}{\ensuremath{\mathcal{I}}}
+\newcommand{\dom}{\ensuremath{\textup{ dom }}}
+
+\usepackage{xcolor}
+\newcommand{\raph}[1]{\textcolor{red}{#1}}
+
+\definecolor{myblue}{rgb}{0,0.5,0.8}
+\newcommand{\mpar}[1]{\marginpar{\color{red}\footnotesize\raggedright#1}}
+\newcommand{\bpar}[1]{\marginpar{\color{myblue}\footnotesize\raggedright#1}}
+\addtolength{\marginparwidth}{1cm}
+\long\def\stephan#1{{\color{myblue} #1}}
+\newcommand{\TRUE}{\textsc{true}}
+\newcommand{\FALSE}{\textsc{false}}
+
+\newtheorem{prop}{Propriété}
+\newtheorem{defin}{Définition}
+
+\begin{document}
+
+\maketitle
+
+Ce document développe l'idée de transformer les formules en TLA$^+$ avant de les abstraire, présentée dans le fichier \texttt{TestAbstracion.tla}.
+
+\paragraph{Observations}
+
+Certaines formules valides en TLA$^+$ ne sont pas démontrables en utilisant seulement l'abstraction vers la FOL.
+On rencontre plusieurs cas dans les preuves en TLA$^+$ qu'il serait utile de pouvoir démontrer.
+
+Un premier cas est la formule de Barcan $(\forall x : \Box P(x)) \Rightarrow (\Box \forall x : P(x))$ et sa contraposée.
+
+Un deuxième cas utile pour des preuves en TLA$^+$ est le suivant :
+on souhaite prouver l'objectif de preuve $\Box B$ à partir de l'hypothèse $\Box A$, où $A \Rightarrow B$ est valide sans autre hypothèse.
+Ceci est correct car pour une formule $A \Rightarrow B$ valide, $\Box A \Rightarrow \Box B$ est également valide.
+L'abstraction (vers la FOL ou la ML) n'est cependant pas toujours suffisante pour prouver une telle obligation.
+
+Par exemple lorsque
+\[ \Box A = \Box \forall x : \neg (A_1 \lor A_2) \]
+\[ \Box B = \Box \forall x : \neg A_1 \land \neg A_2\]
+lors de l'abstraction vers la FOL, les deux opérateurs $\Box$ sont abstraits vers des opérateurs FOL différents ; de même lors de l'abstraction vers la ML, les deux opérateurs $\forall x$ sont abstraits vers des propositions ML différentes.
+
+On ne peut alors montrer l'obligation de preuve ni avec OBVIOUS ni avec BY PTL.
+
+\begin{comment}
+Remarque : Ici on raisonnera sur des formules TLA$^+$ et pas sur des formules FOML.
+Dans la FOML l'interprétation du symbole $\nabla$ n'est pas connue,
+les transformations que l'on peut effectuer sur une formule FOML tout
+en gardant des formules équivalentes sont donc moindres par rapport aux transformations sur les formules TLA$^+$.
+\end{comment}
+
+\paragraph{Transformation de formule avant abstraction}
+
+Une première solution envisagée est de transformer des formules FOML en autres formules FOML équivalentes.
+Cette transformation devrait préserver l'équivalence entre la formule initiale et la formule finale et permettre d'abstraire différentes formules FOML vers des opérateurs FOL ou propositions ML identiques.
+
+Dans l'exemple précédent, les formules $\neg (A_1 \lor A_2)$ et $\neg A_1 \land \neg A_2$ équivalentes devraient être transformées vers une même formule FOML $\phi$.
+L'abstraction (vers la FOL ou la ML) devrait alors abstraire $\Box A$ et $\Box B$ vers la même formule FOL et permettre de prouver l'obligation de preuve.
+
+
+\paragraph{Système de réécriture}
+
+On définit la transformation effectuée sous forme d'un système de réécriture.
+
+\begin{defin}
+  On définit les différentes règles de réécriture pour une formule TLA$^+$.
+  Chaque règle peut être appliquée au sein d'une formule.
+  \begin{align*}
+    \Diamond \phi & \longrightarrow \neg \Box \neg \phi \\
+    \exists x : \phi & \longrightarrow \neg \forall x : \neg \phi \\
+    \neg \neg \phi & \longrightarrow \phi \\
+    \phi_1 \Leftrightarrow \phi_2 & \longrightarrow (\phi_1 \Rightarrow \phi_2) \land (\phi_2 \Rightarrow \phi_1) \\
+    \phi_1 \Rightarrow \phi_2 & \longrightarrow \neg \phi_1 \lor \phi_2 \\
+    \phi_1 \land \phi_2 & \longrightarrow \neg(\neg \phi_1 \lor \neg \phi_2) \\
+    \TRUE & \longrightarrow \neg \FALSE \\
+    \Box \Box \phi & \longrightarrow \Box \phi \\
+  \end{align*}
+\end{defin}
+
+\paragraph{Remarques}
+
+On pourrait essayer ensuite d'étendre ce système de réécriture, par exemple en développant les formules du type $A \land (B \lor C) \longrightarrow (A \land C) \lor (A \land B)$ en s'inspirant du calcul d'une forme clausale pour une formule FOL.
+Cela pourrait permettre d'identifier plus de formules vers une même formule TLA$^+$ mais risque d'impliquer un temps exponentiel lors du calcul.
+
+
+\paragraph{Propriétés}
+
+On montre différentes propriétés vérifiées par ce système de réécriture
+
+\begin{prop} \emph{Correction du système de réécriture} \\
+  Pour $\psi_i, \psi_f$ des formules TLA$^+$ telles que $\psi_i \longrightarrow^* \psi_f$,
+  la formule FOML $\psi_i \Leftrightarrow \psi_f$ est valide.
+\end{prop}
+
+On peut démontrer cette propriété par récurrence sur la longueur de la dérivation.
+Le cas où $\psi_i = \psi_f$ est immédiat. Il suffit de vérifier que la propriété est vraie dans le cas où $\psi_i \longrightarrow \psi_f$.
+On remarque que dans chaque étape de réécriture les formules à gauche et à droite sont équivalentes.
+L'équivalence est préservée en insérant ces formules dans un contexte (càd une formule plus grande avec un emplacement libre), ce qui conclut la démonstration.
+
+\begin{prop} \emph{Terminaison du système de réécriture} \\
+  Pour $\psi$ une formule TLA$^+$ il n'existe pas de dérivation infinie partant de $\psi$.
+\end{prop}
+
+On peut le montrer en utilisant un ordre bien fondé sur les formules TLA$^+$ tel que pour chaque étape de réécriture la formule finale soit strictement inférieure à la formule initiale.
+On considère l'ordre lexicographique suivant :
+pour $\phi$ une formule FOML, on pose
+\begin{comment}
+\begin{itemize}
+\item $a$ est la hauteur maximale d'un symbole $\Leftrightarrow$ dans $\phi$ (on peut représenter $\phi$ sous forme d'un arbre où un noeud est un opérateur et ses fils sont ses arguments)
+\end{itemize}
+\end{comment}
+
+\end{document}
