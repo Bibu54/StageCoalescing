@@ -119,12 +119,31 @@ L'équivalence est préservée en insérant ces formules dans un contexte (càd 
 \end{prop}
 
 On peut le montrer en utilisant un ordre bien fondé sur les formules TLA$^+$ tel que pour chaque étape de réécriture la formule finale soit strictement inférieure à la formule initiale.
-On considère l'ordre lexicographique suivant :
-pour $\phi$ une formule FOML, on pose
-\begin{comment}
-\begin{itemize}
-\item $a$ est la hauteur maximale d'un symbole $\Leftrightarrow$ dans $\phi$ (on peut représenter $\phi$ sous forme d'un arbre où un noeud est un opérateur et ses fils sont ses arguments)
-\end{itemize}
-\end{comment}
+
+Pour $\phi$ une formule FOML, on définit sa hauteur \( h(\phi) \) récursivement par :
+\begin{align*}
+  h(\neg \phi) & = h(\phi) + 1 \\
+  h(\Box \phi) & = h(\phi) + 1 \\
+  h(\Diamond \phi) & = h(\phi) + 4 \\
+  h(\forall x : \phi) & = h(\phi) + 1 \\
+  h(\exists x : \phi) & = h(\phi) + 4 \\
+  h(\FALSE) & = 0 \\
+  h(\TRUE) & = 2 \\
+  h(P) & = 0 \textup{ pour tout prédicat \(P\) } \\
+  h(\phi_1 \lor \phi_2) & = h(\phi_1) + h(\phi_2) \\
+  h(\phi_1 \land \phi_2) & = h(\phi_1) + h(\phi_2) + 4\\
+  h(\phi_1 \Rightarrow \phi_2) & = h(\phi_1) + h(\phi_2) + 2\\
+  h(\phi_1 \Leftrightarrow \phi_2) & = 2h(\phi_1) + 2h(\phi_2) + 9
+\end{align*}
+On peut alors montrer que le système de réécriture vérifie les deux propriétés suivantes :
+\begin{enumerate}
+\item Pour toute règle de réécriture, la hauteur de la formule de droite est strictement plus faible que la hauteur de la formule de gauche.
+\item La hauteur d'une formule croit strictement avec la hauteur de ses sous formules.
+  Plus formellement, pour tout contexte \( C[\_] \), çàd une formule TLA$^+$ contenant un \og{} trou \fg{} (un emplacement libre pour insérer une sous formule), et pour toutes formules \( \phi_1, \phi_2 \), si \( h(\phi_1) < h(\phi_2) \) alors \( h(C[\phi_1]) < h(C[\phi_2]) \).
+\end{enumerate}
+
+La deuxième propriété est utile car on autorise la réécriture d'une formule en appliquant une étape parmi ses sous-formules.
+Avec ces deux propriétés on peut montrer que pour toutes formules \( \psi_i \longrightarrow \psi_f \), \( h(\psi_i) > h(\psi_f) \).
+Ceci montre la terminaison car l'ordre strict sur les entiers naturels est un ordre bien fondé.
 
 \end{document}
