@@ -19,6 +19,7 @@
 \newcommand{\M}{\ensuremath{\mathcal{M}}}
 \newcommand{\I}{\ensuremath{\mathcal{I}}}
 \newcommand{\dom}{\ensuremath{\textup{ dom }}}
+\newcommand{\lra}{\ensuremath{\longrightarrow}}
 
 \usepackage{xcolor}
 \newcommand{\raph}[1]{\textcolor{red}{#1}}
@@ -68,7 +69,7 @@ en gardant des formules équivalentes sont donc moindres par rapport aux transfo
 
 \paragraph{Transformation de formule avant abstraction}
 
-Une première solution envisagée est de transformer des formules FOML en autres formules FOML équivalentes.
+Une solution envisagée est de transformer des formules FOML en autres formules FOML équivalentes.
 Cette transformation devrait préserver l'équivalence entre la formule initiale et la formule finale et permettre d'abstraire différentes formules FOML vers des opérateurs FOL ou propositions ML identiques.
 
 Dans l'exemple précédent, les formules $\neg (A_1 \lor A_2)$ et $\neg A_1 \land \neg A_2$ équivalentes devraient être transformées vers une même formule FOML $\phi$.
@@ -81,7 +82,6 @@ On définit la transformation effectuée sous forme d'un système de réécritur
 
 \begin{defin}
   On définit les différentes règles de réécriture pour une formule TLA$^+$.
-  Chaque règle peut être appliquée au sein d'une formule.
   \begin{align*}
     \Diamond \phi & \longrightarrow \neg \Box \neg \phi \\
     \exists x : \phi & \longrightarrow \neg \forall x : \neg \phi \\
@@ -92,6 +92,15 @@ On définit la transformation effectuée sous forme d'un système de réécritur
     \TRUE & \longrightarrow \neg \FALSE \\
     \Box \Box \phi & \longrightarrow \Box \phi \\
   \end{align*}
+  Chaque règle peut être appliquée au sein d'une formule.
+  On notera alors \( \psi_i \longrightarrow \psi_f \) où \(\psi_f\) est obtenue en appliquant une étape de réécriture sur une sous-formule de \(\psi_i\).
+\end{defin}
+
+La définition suivante sera utile pour formaliser les preuves des différentes propriétés.
+
+\begin{defin} \emph{Contexte} \\
+  Un contexte \( C[\_] \) est une modèle de formule contenant un emplacement libre dans lequel on peut insérer une sous-formule \( \phi \).
+  Ceci forme alors la formule \( \psi = C[\phi] \)
 \end{defin}
 
 \paragraph{Remarques}
@@ -112,7 +121,8 @@ On montre différentes propriétés vérifiées par ce système de réécriture
 On peut démontrer cette propriété par récurrence sur la longueur de la dérivation.
 Le cas où $\psi_i = \psi_f$ est immédiat. Il suffit de vérifier que la propriété est vraie dans le cas où $\psi_i \longrightarrow \psi_f$.
 On remarque que dans chaque étape de réécriture les formules à gauche et à droite sont équivalentes.
-L'équivalence est préservée en insérant ces formules dans un contexte (càd une formule plus grande avec un emplacement libre), ce qui conclut la démonstration.
+L'équivalence est préservée en insérant ces formules dans un contexte,
+ce qui conclut la démonstration.
 
 \begin{prop} \emph{Terminaison du système de réécriture} \\
   Pour $\psi$ une formule TLA$^+$ il n'existe pas de dérivation infinie partant de $\psi$.
@@ -139,11 +149,44 @@ On peut alors montrer que le système de réécriture vérifie les deux proprié
 \begin{enumerate}
 \item Pour toute règle de réécriture, la hauteur de la formule de droite est strictement plus faible que la hauteur de la formule de gauche.
 \item La hauteur d'une formule croit strictement avec la hauteur de ses sous formules.
-  Plus formellement, pour tout contexte \( C[\_] \), çàd une formule TLA$^+$ contenant un \og{} trou \fg{} (un emplacement libre pour insérer une sous formule), et pour toutes formules \( \phi_1, \phi_2 \), si \( h(\phi_1) < h(\phi_2) \) alors \( h(C[\phi_1]) < h(C[\phi_2]) \).
+  Plus formellement, pour tout contexte \( C[\_] \) et pour toutes formules \( \phi_1, \phi_2 \), si \( h(\phi_1) < h(\phi_2) \) alors \( h(C[\phi_1]) < h(C[\phi_2]) \).
 \end{enumerate}
 
 La deuxième propriété est utile car on autorise la réécriture d'une formule en appliquant une étape parmi ses sous-formules.
-Avec ces deux propriétés on peut montrer que pour toutes formules \( \psi_i \longrightarrow \psi_f \), \( h(\psi_i) > h(\psi_f) \).
+Avec ces deux propriétés on peut montrer que pour toutes formules \( \psi_i \longrightarrow^+ \psi_f \), \( h(\psi_i) > h(\psi_f) \).
 Ceci montre la terminaison car l'ordre strict sur les entiers naturels est un ordre bien fondé.
 
+\begin{prop} \emph{Confluence de la réécriture} \\
+  Pour \( \psi_i, \psi_a, \psi_b \) des formules telles que \( \psi_i \longrightarrow^* \psi_a \) et \( \psi_i \longrightarrow^* \psi_b \) alors il existe \( \psi_f \) telle que \( \psi_a \longrightarrow^* \psi_f \) et \( \psi_b \longrightarrow^* \psi_f \).
+\end{prop}
+
+Comme la réécriture termine, il suffit de montrer la confluence faible :
+
+\begin{prop} \emph{Confluence faible de la réécriture} \\
+  \label{confl_faible}
+  Pour \( \psi_i, \psi_a, \psi_b \) des formules telles que \( \psi_i \longrightarrow \psi_a \) et \( \psi_i \longrightarrow \psi_b \) alors il existe \( \psi_f \) telle que \( \psi_a \longrightarrow^* \psi_f \) et \( \psi_b \longrightarrow^* \psi_f \).
+\end{prop}
+
+
+\paragraph{Preuve de la propriété \ref{confl_faible}}
+On note tout d'abord \(\phi_a^i \longrightarrow \phi_a\) et \(\phi_b^i \longrightarrow \phi_b\) les règles appliquées dans les étapes de transformation \(\psi_i \lra \psi_a\) et \(\psi_i \lra \psi_b\).
+\(\phi_a^i\) et \(\phi_b^i\) sont donc des sous-formules de \(\psi_i\), \(\phi_a\) de \(\psi_a\) et \(\phi_b\) de \(\psi_b\).
+\begin{comment}
+On pose tout d'abord les notations :
+\[ \psi_i = C_a[\phi_a^i] \longrightarrow C_a[\phi_a] = \psi_a \]
+\[ \psi_i = C_b[\phi_b^i] \longrightarrow C_b[\phi_b] = \psi_b \]
+où les règles appliquées sont \( \phi_a^i \longrightarrow \phi_a \) et \( \phi_b^i \longrightarrow \phi_b \).
+\end{comment}
+
+% On fait une disjonction de cas sur la règle appliquée dans \( \phi_a^i \longrightarrow \phi_a \).
+% Par symétrie on suppose que la règle appliquée sur \( \phi_b^i \longrightarrow \phi_b \) n'est pas l'élimination d'un symbole \(\Leftrightarrow\).
+
+\smallskip
+On considère d'abord le cas où \( \phi_a^i \) n'est pas une sous-formule de \( \phi_b^i \) dans  \(\psi_i\) et inversement.
+Alors \( \psi_i\) est de la forme \(\psi_i = C[\phi_a^i, \phi_b^i]\) où \(C[\_,\_]\) est un contexte à deux emplacements, avec \(\psi_a = C[\phi_a, \phi_b^i]\) et \(\psi_b = C[\phi_a^i, \phi_b]\).
+On pose alors \(\psi_f = C[\phi_a, \phi_b]\), qui peut être obtenue à partir de \(\psi_a\) en appliquant l'étape \(\phi_b^i \longrightarrow \phi_b \) ; de même pour \(\psi_b\).
+
+
+\smallskip
+On considère ensuite l'autre cas. Par symétrie on suppose que \(\phi_b^i\) est une sous-formule de \(\phi_a^i\).
 \end{document}
