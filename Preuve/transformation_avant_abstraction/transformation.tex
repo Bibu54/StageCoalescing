@@ -20,6 +20,7 @@
 \newcommand{\I}{\ensuremath{\mathcal{I}}}
 \newcommand{\dom}{\ensuremath{\textup{ dom }}}
 \newcommand{\lra}{\ensuremath{\longrightarrow}}
+\newcommand{\qbq}{\ensuremath{\quad | \quad}}
 
 \usepackage{xcolor}
 \newcommand{\raph}[1]{\textcolor{red}{#1}}
@@ -88,9 +89,13 @@ On définit la transformation effectuée sous forme d'un système de réécritur
     \neg \neg \phi & \longrightarrow \phi \\
     \phi_1 \Leftrightarrow \phi_2 & \longrightarrow (\phi_1 \Rightarrow \phi_2) \land (\phi_2 \Rightarrow \phi_1) \\
     \phi_1 \Rightarrow \phi_2 & \longrightarrow \neg \phi_1 \lor \phi_2 \\
-    \phi_1 \land \phi_2 & \longrightarrow \neg(\neg \phi_1 \lor \neg \phi_2) \\
+    \phi_1 \lor \phi_2 & \longrightarrow \neg(\neg \phi_1 \land \neg \phi_2) \\
+                  & \textup{\raph{J'ai changé cette règle pour que les \(\lor\)}}\\
+                  & \textup{\raph{soient éliminés plutôt que les \(\land\)}}\\
     \TRUE & \longrightarrow \neg \FALSE \\
     \Box \Box \phi & \longrightarrow \Box \phi \\
+    \Box (\phi_1 \land \phi_2) & \lra (\Box \phi_1) \land (\Box \phi_2) \textup{\raph{Ajout 1}}\\
+    (\phi_1 \leadsto \phi_2) & \lra \Box (\phi_1 \Rightarrow \Diamond \phi_2) \textup{\raph{Ajout 2}}
   \end{align*}
   Chaque règle peut être appliquée au sein d'une formule.
   On notera alors \( \psi_i \longrightarrow \psi_f \) où \(\psi_f\) est obtenue en appliquant une étape de réécriture sur une sous-formule de \(\psi_i\).
@@ -101,6 +106,29 @@ La définition suivante sera utile pour formaliser les preuves des différentes 
 \begin{defin} \emph{Contexte} \\
   Un contexte \( C[\_] \) est une modèle de formule contenant un emplacement libre dans lequel on peut insérer une sous-formule \( \phi \).
   Ceci forme alors la formule \( \psi = C[\phi] \)
+\end{defin}
+
+On travaillera avec la formalisation suivante pour les formules TLA$^+$.
+
+\begin{defin}
+  Une formule TLA$^+$ est engendrée par la grammaire suivante :
+  \begin{align*}\phi ::= & \quad
+    \TRUE \quad | \quad
+    \FALSE \quad | \quad
+    \Box \phi \quad | \quad
+    \Diamond \phi \quad | \quad
+    \exists x : \phi \quad | \quad
+    \forall x : \phi \quad | \quad
+                           \phi \land \phi \\
+                         & \quad | \quad
+    \phi \lor \phi \quad | \quad
+    \neg \phi \quad | \quad
+    \phi \Rightarrow \phi \quad | \quad
+    \phi \Leftrightarrow \phi \quad | \quad
+    \phi \leadsto \phi \quad | \quad
+      P
+  \end{align*}
+  pour tout symbole de prédicat $P$.
 \end{defin}
 
 \paragraph{Remarques}
@@ -124,6 +152,8 @@ On remarque que dans chaque étape de réécriture les formules à gauche et à 
 L'équivalence est préservée en insérant ces formules dans un contexte,
 ce qui conclut la démonstration.
 
+\raph{ok}
+
 \begin{prop} \emph{Terminaison du système de réécriture} \\
   Pour $\psi$ une formule TLA$^+$ il n'existe pas de dérivation infinie partant de $\psi$.
 \end{prop}
@@ -133,26 +163,28 @@ On peut le montrer en utilisant un ordre bien fondé sur les formules TLA$^+$ te
 Pour $\phi$ une formule FOML, on définit sa hauteur \( h(\phi) \) récursivement par :
 \begin{align*}
   h(\neg \phi) & = h(\phi) + 1 \\
-  h(\Box \phi) & = h(\phi) + 1 \\
-  h(\Diamond \phi) & = h(\phi) + 4 \\
-  h(\forall x : \phi) & = h(\phi) + 1 \\
-  h(\exists x : \phi) & = h(\phi) + 4 \\
+  h(\Box \phi) & = 2h(\phi) \\
+  h(\Diamond \phi) & = 2h(\phi) + 4 \\
+  h(\forall x : \phi) & = h(\phi) \\
+  h(\exists x : \phi) & = h(\phi) + 3 \\
   h(\FALSE) & = 0 \\
   h(\TRUE) & = 2 \\
   h(P) & = 0 \textup{ pour tout prédicat \(P\) } \\
-  h(\phi_1 \lor \phi_2) & = h(\phi_1) + h(\phi_2) \\
-  h(\phi_1 \land \phi_2) & = h(\phi_1) + h(\phi_2) + 4\\
-  h(\phi_1 \Rightarrow \phi_2) & = h(\phi_1) + h(\phi_2) + 2\\
-  h(\phi_1 \Leftrightarrow \phi_2) & = 2h(\phi_1) + 2h(\phi_2) + 9
+  h(\phi_1 \land \phi_2) & = h(\phi_1) + h(\phi_2) + 1\\
+  h(\phi_1 \lor \phi_2) & = h(\phi_1) + h(\phi_2) + 5\\
+  h(\phi_1 \Rightarrow \phi_2) & = h(\phi_1) + h(\phi_2) + 7\\
+  h(\phi_1 \Leftrightarrow \phi_2) & = 2h(\phi_1) + 2h(\phi_2) + 16\\
+  h(\phi_1 \leadsto \phi_2) & = 2h(\phi_1) + 4h(\phi_2) + 23
 \end{align*}
-On peut alors montrer que le système de réécriture vérifie les deux propriétés suivantes :
+On peut alors montrer que le système de réécriture vérifie les trois propriétés suivantes :
 \begin{enumerate}
+\item La hauteur de toute formule est entière positive.
 \item Pour toute règle de réécriture, la hauteur de la formule de droite est strictement plus faible que la hauteur de la formule de gauche.
 \item La hauteur d'une formule croit strictement avec la hauteur de ses sous formules.
   Plus formellement, pour tout contexte \( C[\_] \) et pour toutes formules \( \phi_1, \phi_2 \), si \( h(\phi_1) < h(\phi_2) \) alors \( h(C[\phi_1]) < h(C[\phi_2]) \).
 \end{enumerate}
 
-La deuxième propriété est utile car on autorise la réécriture d'une formule en appliquant une étape parmi ses sous-formules.
+La troisième propriété est utile car on autorise la réécriture d'une formule en appliquant une étape parmi ses sous-formules.
 Avec ces deux propriétés on peut montrer que pour toutes formules \( \psi_i \longrightarrow^+ \psi_f \), \( h(\psi_i) > h(\psi_f) \).
 Ceci montre la terminaison car l'ordre strict sur les entiers naturels est un ordre bien fondé.
 
@@ -188,5 +220,37 @@ On pose alors \(\psi_f = C[\phi_a, \phi_b]\), qui peut être obtenue à partir d
 
 
 \smallskip
-On considère ensuite l'autre cas. Par symétrie on suppose que \(\phi_b^i\) est une sous-formule de \(\phi_a^i\).
+On considère ensuite l'autre cas où parmi \(\phi_a^i\) et \(\phi_b^i\) l'une des formule est une sous-formule de l'autre.
+Par symétrie on suppose que \(\phi_b^i\) est une sous-formule de \(\phi_a^i\).
+
+On remarque tout d'abord par définition des règles de réécriture que si \(\phi_a^i = \phi_b^i\) alors la règle appliquée est la même dans \(\phi_a^i \lra \phi_a\) et \(\phi_b^i \lra \phi_b\).
+La propriété est vérifiée dans ce cas, on considèrera donc dans la suite de la preuve que \(\phi_a^i \neq \phi_b^i\).
+
+On remarque ensuite que \(\phi_a^i\) est de la forme \(\phi_a^i = C[\phi_b^i]\), pour vérifier la propriété il suffit donc de trouver une formule \(\phi_f\) telle que \(\phi_a^i \lra \phi_a \lra \phi_f\) et \(C[\phi_b^i] \lra C[\phi_b] \lra \phi_f\). C'est ce qu'on cherchera à montrer dans la suite de la preuve.
+
+\[ \begin{array}{c c c}
+     \phi_a^i = C[\phi_b^i] & \lra & C[\phi_b^i] \\
+     \downarrow & & \downarrow \\
+     \phi_a & \lra & \phi_f
+   \end{array} \]
+
+On fait une disjonction de cas sur \(\phi_a^i\).
+
+\begin{itemize}
+\item Cas \(\phi_a^i = \Diamond \phi_a^j\) : \\
+  La règle qui est appliquée pour \(\phi_a^i \lra \phi_a\) est alors \(\Diamond \phi_a^j \lra \neg \Box \neg \phi_a^j\).
+  De plus \(\phi_b^i\) est une sous-formule de \(\phi_a^j\), on notera \(\phi_a^j = C_b[\phi_b^i]\).
+  On pose \(\phi_f = \neg \Box \neg C_b[\phi_b]\).
+  Alors \(\phi_a = \neg \Box \neg C_b[\phi_b^i] \lra \neg \Box \neg C_b[\phi_b] = \phi_f\), et \(\Diamond C_b[\phi_b] \lra \neg \Box \neg C_b[\phi_b] = \phi_f\).
+
+\item Le {cas \(\phi_a^i = \exists x : \phi_a^j\)} est similaire.
+\item La même preuve fonctionne également avec {les cas} \(\phi_a^i =
+  \phi_a^{j1} \leadsto \phi_a^{j2} \qbq
+  \phi_a^{j1} \Rightarrow \phi_a^{j2} \qbq
+  \phi_a^{j1} \lor \phi_a^{j2}\)
+  où on doit séparer les cas suivant si \(\phi_b^i\) est une sous-formule de \(\phi_a^{j1}\) ou \(\phi_a^{j2}\).
+\item Cas \(\phi_a^i = \phi_a^{j1} \Leftrightarrow \phi_a^{j2}\) : \\
+\end{itemize}
+
+
 \end{document}
