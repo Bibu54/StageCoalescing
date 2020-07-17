@@ -244,12 +244,41 @@ On fait une disjonction de cas sur \(\phi_a^i\).
   Alors \(\phi_a = \neg \Box \neg C_b[\phi_b^i] \lra \neg \Box \neg C_b[\phi_b] = \phi_f\), et \(\Diamond C_b[\phi_b] \lra \neg \Box \neg C_b[\phi_b] = \phi_f\).
 
 \item Le {cas \(\phi_a^i = \exists x : \phi_a^j\)} est similaire.
-\item La même preuve fonctionne également avec {les cas} \(\phi_a^i =
+\item Cas \(\phi_a^i = \neg \phi_a^j\) : \\
+  Par élimination sur les règles de réécriture la règle appliquée pour \(\phi_a^i \lra \phi_a\) est \(\neg \neg \phi \lra \phi\) donc \(\phi_a^i\) est de la forme \(\phi_a^i = \neg \neg \phi_a^k\).
+
+  Si \(\phi_b^i\) est une sous-formule de \(\phi_a^k\) on peut utiliser la même preuve que pour les cas précédents.
+  
+  Sinon \(\phi_a^i = \neg \phi_b^i = \neg \neg \phi_a^k\).
+  De même on peut déduire que la règle appliquée pour \(\phi_b^i \lra \phi_b\) est \(\neg \neg \phi \lra \phi\) et donc \(\phi_b^i = \neg \neg \phi_a^l\).
+
+  Alors
+  \[\phi_a^i = \neg \neg \phi_a^k \lra \phi_a^k = \phi_a\]
+  et
+  \[\phi_a^i = \neg \phi_b^i = \neg (\neg \neg \phi_a^l) \lra \neg \phi_a^l = \neg \phi_b\]
+  Finalement \(\phi_a = \neg \phi_b\) ce qui conclut la preuve pour ce cas.
+\item Cas \(\phi_a^i = \phi_a^{j1} \Leftrightarrow \phi_a^{j2}\) : \\
+  On suppose que \(\phi_b\) est une sous formule de \(\phi_a^{j1}\) et on note \(\phi_a^{j1} = C_b[\phi_b^i]\).
+  Par élimination sur les différentes règles la règle qui est appliquée pour \(\phi_a^i \lra \phi_a\) est
+  \[\phi_a^i = C_b[\phi_b^i] \Leftrightarrow \phi_a^{j2} \lra (C_b[\phi_b^i] \Rightarrow \phi_a^{j2}) \land (\phi_a^{j2} \Rightarrow C_b[\phi_b^i]) = \phi_a\]
+  On pose \(\phi_f = (C_b[\phi_b] \Rightarrow \phi_a^{j2}) \land (\phi_a^{j2} \Rightarrow C_b[\phi_b]) = \phi_a\).
+  Alors
+  \[\begin{array}{c c c}
+      C_b[\phi_b^i] \Leftrightarrow \phi_a^{j2} & \lra & C_b[\phi_b] \Leftrightarrow \phi_a^{j2} \\
+      \downarrow & & \downarrow \\
+      (C_b[\phi_b^i] \Rightarrow \phi_a^{j2}) & & (C_b[\phi_b] \Rightarrow \phi_a^{j2}) \\
+      \land (\phi_a^{j2} \Rightarrow C_b[\phi_b^i]) & \lra^2 & \land (\phi_a^{j2} \Rightarrow C_b[\phi_b])
+    \end{array} \]
+  Le cas où \(\phi_b^i\) est une sous-formule de \(\phi_a^{j2}\) est similaire.
+\item Les cas \(\phi_a^i =
   \phi_a^{j1} \leadsto \phi_a^{j2} \qbq
   \phi_a^{j1} \Rightarrow \phi_a^{j2} \qbq
   \phi_a^{j1} \lor \phi_a^{j2}\)
-  où on doit séparer les cas suivant si \(\phi_b^i\) est une sous-formule de \(\phi_a^{j1}\) ou \(\phi_a^{j2}\).
-\item Cas \(\phi_a^i = \phi_a^{j1} \Leftrightarrow \phi_a^{j2}\) : \\
+  sont similaires.
+\item Cas \(\phi_a^i = \Box \phi_a^j\) : \\
+  \raph{à finir de rédiger}
+\item
+  Tous les autres cas sont absurdes, soit parce que \(\phi_a^i\) n'a pas de sous-formule stricte soit parce qu'aucune règle de réécriture ne peut s'appliquer.
 \end{itemize}
 
 
