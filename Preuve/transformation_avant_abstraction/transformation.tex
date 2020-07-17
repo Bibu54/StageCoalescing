@@ -42,6 +42,9 @@
 
 Ce document développe l'idée de transformer les formules en TLA$^+$ avant de les abstraire, présentée dans le fichier \texttt{TestAbstracion.tla}.
 
+\section{Introduction}
+
+
 \paragraph{Observations}
 
 Certaines formules valides en TLA$^+$ ne sont pas démontrables en utilisant seulement l'abstraction vers la FOL.
@@ -76,6 +79,8 @@ Cette transformation devrait préserver l'équivalence entre la formule initiale
 Dans l'exemple précédent, les formules $\neg (A_1 \lor A_2)$ et $\neg A_1 \land \neg A_2$ équivalentes devraient être transformées vers une même formule FOML $\phi$.
 L'abstraction (vers la FOL ou la ML) devrait alors abstraire $\Box A$ et $\Box B$ vers la même formule FOL et permettre de prouver l'obligation de preuve.
 
+\section{Définitions}
+
 
 \paragraph{Système de réécriture}
 
@@ -90,12 +95,11 @@ On définit la transformation effectuée sous forme d'un système de réécritur
     \phi_1 \Leftrightarrow \phi_2 & \longrightarrow (\phi_1 \Rightarrow \phi_2) \land (\phi_2 \Rightarrow \phi_1) \\
     \phi_1 \Rightarrow \phi_2 & \longrightarrow \neg \phi_1 \lor \phi_2 \\
     \phi_1 \lor \phi_2 & \longrightarrow \neg(\neg \phi_1 \land \neg \phi_2) \\
-                  & \textup{\raph{J'ai changé cette règle pour que les \(\lor\)}}\\
-                  & \textup{\raph{soient éliminés plutôt que les \(\land\)}}\\
     \TRUE & \longrightarrow \neg \FALSE \\
     \Box \Box \phi & \longrightarrow \Box \phi \\
-    \Box (\phi_1 \land \phi_2) & \lra (\Box \phi_1) \land (\Box \phi_2) \textup{\raph{Ajout 1}}\\
-    (\phi_1 \leadsto \phi_2) & \lra \Box (\phi_1 \Rightarrow \Diamond \phi_2) \textup{\raph{Ajout 2}}
+    \Box (\phi_1 \land \phi_2) & \lra (\Box \phi_1) \land (\Box \phi_2) \\
+    (\phi_1 \leadsto \phi_2) & \lra \Box (\phi_1 \Rightarrow \Diamond \phi_2) \\
+    \Box \forall x : \phi & \lra \forall x : \Box \phi
   \end{align*}
   Chaque règle peut être appliquée au sein d'une formule.
   On notera alors \( \psi_i \longrightarrow \psi_f \) où \(\psi_f\) est obtenue en appliquant une étape de réécriture sur une sous-formule de \(\psi_i\).
@@ -137,7 +141,7 @@ On pourrait essayer ensuite d'étendre ce système de réécriture, par exemple 
 Cela pourrait permettre d'identifier plus de formules vers une même formule TLA$^+$ mais risque d'impliquer un temps exponentiel lors du calcul.
 
 
-\paragraph{Propriétés}
+\section{Propriétés}
 
 On montre différentes propriétés vérifiées par ce système de réécriture
 
@@ -152,7 +156,6 @@ On remarque que dans chaque étape de réécriture les formules à gauche et à 
 L'équivalence est préservée en insérant ces formules dans un contexte,
 ce qui conclut la démonstration.
 
-\raph{ok}
 
 \begin{prop} \emph{Terminaison du système de réécriture} \\
   Pour $\psi$ une formule TLA$^+$ il n'existe pas de dérivation infinie partant de $\psi$.
@@ -165,8 +168,8 @@ Pour $\phi$ une formule FOML, on définit sa hauteur \( h(\phi) \) récursivemen
   h(\neg \phi) & = h(\phi) + 1 \\
   h(\Box \phi) & = 2h(\phi) \\
   h(\Diamond \phi) & = 2h(\phi) + 4 \\
-  h(\forall x : \phi) & = h(\phi) \\
-  h(\exists x : \phi) & = h(\phi) + 3 \\
+  h(\forall x : \phi) & = h(\phi) + 1 \\
+  h(\exists x : \phi) & = h(\phi) + 4 \\
   h(\FALSE) & = 0 \\
   h(\TRUE) & = 2 \\
   h(P) & = 0 \textup{ pour tout prédicat \(P\) } \\
@@ -236,15 +239,18 @@ On remarque ensuite que \(\phi_a^i\) est de la forme \(\phi_a^i = C[\phi_b^i]\),
 
 On fait une disjonction de cas sur \(\phi_a^i\).
 
-\begin{itemize}
-\item Cas \(\phi_a^i = \Diamond \phi_a^j\) : \\
-  La règle qui est appliquée pour \(\phi_a^i \lra \phi_a\) est alors \(\Diamond \phi_a^j \lra \neg \Box \neg \phi_a^j\).
+\begin{enumerate}
+\item \label{cas_un_jour}
+  Cas \(\phi_a^i = \Diamond \phi_a^j\) : \\
+  la règle qui est appliquée pour \(\phi_a^i \lra \phi_a\) est alors \(\Diamond \phi_a^j \lra \neg \Box \neg \phi_a^j\).
   De plus \(\phi_b^i\) est une sous-formule de \(\phi_a^j\), on notera \(\phi_a^j = C_b[\phi_b^i]\).
   On pose \(\phi_f = \neg \Box \neg C_b[\phi_b]\).
   Alors \(\phi_a = \neg \Box \neg C_b[\phi_b^i] \lra \neg \Box \neg C_b[\phi_b] = \phi_f\), et \(\Diamond C_b[\phi_b] \lra \neg \Box \neg C_b[\phi_b] = \phi_f\).
 
-\item Le {cas \(\phi_a^i = \exists x : \phi_a^j\)} est similaire.
-\item Cas \(\phi_a^i = \neg \phi_a^j\) : \\
+\item \label{cas_exists}
+  Le {cas \(\phi_a^i = \exists x : \phi_a^j\)} est similaire au cas \ref{cas_un_jour}.
+\item \label{cas_neg}
+  Cas \(\phi_a^i = \neg \phi_a^j\) : \\
   Par élimination sur les règles de réécriture la règle appliquée pour \(\phi_a^i \lra \phi_a\) est \(\neg \neg \phi \lra \phi\) donc \(\phi_a^i\) est de la forme \(\phi_a^i = \neg \neg \phi_a^k\).
 
   Si \(\phi_b^i\) est une sous-formule de \(\phi_a^k\) on peut utiliser la même preuve que pour les cas précédents.
@@ -257,7 +263,8 @@ On fait une disjonction de cas sur \(\phi_a^i\).
   et
   \[\phi_a^i = \neg \phi_b^i = \neg (\neg \neg \phi_a^l) \lra \neg \phi_a^l = \neg \phi_b\]
   Finalement \(\phi_a = \neg \phi_b\) ce qui conclut la preuve pour ce cas.
-\item Cas \(\phi_a^i = \phi_a^{j1} \Leftrightarrow \phi_a^{j2}\) : \\
+\item \label{cas_equiv}
+  Cas \(\phi_a^i = \phi_a^{j1} \Leftrightarrow \phi_a^{j2}\) : \\
   On suppose que \(\phi_b\) est une sous formule de \(\phi_a^{j1}\) et on note \(\phi_a^{j1} = C_b[\phi_b^i]\).
   Par élimination sur les différentes règles la règle qui est appliquée pour \(\phi_a^i \lra \phi_a\) est
   \[\phi_a^i = C_b[\phi_b^i] \Leftrightarrow \phi_a^{j2} \lra (C_b[\phi_b^i] \Rightarrow \phi_a^{j2}) \land (\phi_a^{j2} \Rightarrow C_b[\phi_b^i]) = \phi_a\]
@@ -274,12 +281,73 @@ On fait une disjonction de cas sur \(\phi_a^i\).
   \phi_a^{j1} \leadsto \phi_a^{j2} \qbq
   \phi_a^{j1} \Rightarrow \phi_a^{j2} \qbq
   \phi_a^{j1} \lor \phi_a^{j2}\)
-  sont similaires.
-\item Cas \(\phi_a^i = \Box \phi_a^j\) : \\
-  \raph{à finir de rédiger}
+  sont similaires au cas \label{cas_equiv}.
+\item \label{cas_toujours}
+  Cas \(\phi_a^i = \Box \phi_a^j\) : \\
+  Deux règles de réécriture peuvent s'appliquer dans ce cas : \(\Box \Box \phi \lra \Box \phi\) et \(\Box (\phi_1 \land \phi_2) \lra (\Box \phi_1) \land (\Box \phi_2)\).
+  \begin{itemize}
+  \item Si \(\phi_a^i = \Box (\phi_a^{j1} \land \phi_a^{j2})\), alors \(\phi_b^i\) est une sous-formule de \(\phi_a^{j1} \land \phi_a^{j2}\).
+    Aucune règle ne s'applique directement sur \(\phi_a^{j1} \land \phi_a^{j2}\) donc \(\phi_b^i\) est une sous formule de \(\phi_a^{j1}\) ou de \(\phi_a^{j2}\).
+    On est ramené à la même preuve que dans le cas \ref{cas_equiv}.
+  \item Idem si \(\phi_a^i = \Box \forall x : \phi_a^j\).
+  \item Sinon \(\phi_a^i = \Box \Box \phi_a^k\), et \(\phi_b^i\) est une sous-formule de \(\Box \phi_a^k\).
+
+    Si \(\phi_b^i\) est une sous-formule de \(\phi_a^k\), on est ramené à la preuve du cas \ref{cas_un_jour}.
+
+    Sinon \(\phi_b^i = \Box \phi_a^k\).
+    Alors \(\phi_a^i = \Box \phi_b^i = \Box \Box \phi_a^k\).
+    Ici aussi deux règles peuvent s'appliquer pour \(\phi_b^i \lra \phi_b\).
+    \begin{itemize}
+    \item Si \(\phi_b^i = \Box \Box \phi_a^l\), c'est-à-dire \(\phi_a^i = \Box \phi_b^i = \Box (\Box \Box \phi_a^l)\) on est ramené à une preuve similaire à celle du cas \ref{cas_neg}.
+    \item Sinon \(\phi_b^i = \Box (\phi_a^{l1} \land \phi_a^{l2})\).
+      On pose \(\phi_f = (\Box \phi_a^{l1}) \land (\Box \phi_a^{l2})\).
+      Alors
+      \[ \phi_a = \Box (\phi_a^{l1} \land \phi_a^{l2}) \lra (\Box \phi_a^{l1}) \land (\Box \phi_a^{l2}) = \phi_f \]
+      et
+      \begin{align*}
+        \Box \phi_b & = \Box ((\Box \phi_a^{l1} \land (\Box \phi_a^{l2})) \\
+                    & \lra (\Box \Box \phi_a^{l1}) \land (\Box \Box \phi_a^{l2}) \\
+                    & \lra (\Box \Box \phi_a^{l1}) \land (\Box \phi_a^{l2}) \\
+                    & \lra (\Box \phi_a^{l1}) \land (\Box \phi_a^{l2}) = \phi_f
+      \end{align*}
+      Finalement
+      \[\begin{array}{c c c}
+          \phi_a^i = \Box \Box (\phi_a^{l1} \land \phi_a^{l2}) & \lra & \Box ((\Box \phi_a^{l1}) \land (\Box \phi_a^{l2})) \\
+          \downarrow & & \downarrow_3 \\
+          \phi_a = \Box (\phi_a^{l1} \land \phi_a^{l2}) & \lra & (\Box \phi_a^{l1}) \land (\Box \phi_a^{l2}) = \phi_f
+        \end{array}\]
+      ce qui conclut la preuve pour ce cas.
+    \end{itemize}
+  \end{itemize}
 \item
   Tous les autres cas sont absurdes, soit parce que \(\phi_a^i\) n'a pas de sous-formule stricte soit parce qu'aucune règle de réécriture ne peut s'appliquer.
-\end{itemize}
+\end{enumerate}
 
+
+\section{Conclusion}
+
+Ce système de réécriture préserve l'équivalence entre les formules, termine et est confluent.
+La confluence assure que pour une formule \(\psi_i\) qui se réécrit vers deux formules \(\psi_a\) et \(\psi_b\), on peut réécrire \(\psi_a\) et \(\psi_b\) en une formule \(\psi_f\).
+Ceci assure que lors de la réécriture d'une formule \(\psi\) jusqu'à la terminaison, c'est-à-dire jusqu'à obtenir une formule \(\psi_f\) sur laquelle plus aucune étape de réécriture n'est possible, la formule \(\psi_f\) obtenue est unique et ne dépend pas de l'ordre ou des sous-formules sur lesquelles les étapes de réécriture ont été effectuées.
+On peut donc définir la \emph{forme normale} de \(\psi\) comme l'unique formule obtenue à la fin de la réécriture partant de \(\psi\).
+
+Calculer la forme normale des formules TLA$^+$ peut être utilisé afin de prouver automatique plus de formules avec TLAPS.
+On peut en effet :
+\begin{enumerate}
+\item Calculer la forme normale de la formule TLA$^+$
+\item Abstraire la forme normale vers la FOL
+\item Traiter la formule FOL avec un prouveur automatique de logique du premier ordre
+\end{enumerate}
+
+On considère l'exemple suivant :
+on rappelle la formule de Barcan donnée dans l'introduction, appliquée à un prédicat \(P\)
+\[(\forall x : \Box P) \Rightarrow (\Box \forall x : P)\]
+qui n'est pas prouvable en utilisant seulement l'abstraction.
+On peut vérifier que la forme normale de la formule de Barcan est
+\[(\forall x : \Box P) \Rightarrow (\forall x : \Box P)\]
+En abstrayant la forme normale on obtient la formule FOL
+\[(\forall x : \fbox{\(\Box P\)}) \Rightarrow (\forall x : \fbox{\(\Box P\)})\]
+qui est une tautologie prouvable avec un prouveur automatique de logique du premier ordre.
+Le système de réécriture peut ainsi être utilisé pour prouver plus de formule en TLA$^+$ dont la formule de Barcan.
 
 \end{document}
